@@ -1,10 +1,10 @@
 Package: DOMID
-Title: What the Package Does (One Line, Title Case)
+Title: DOMID (Detecting Outliers in MIxed-type Data)
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Efthymios", "Costa", , "efthymios.costa17@imperial.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-1267-1165"))
+Description: The DOMID (Detecting Outliers in MIxed-type Data) R package includes functions that can be used for detecting outliers in data sets consisting of mixed-type data (i.e. both continuous and discrete variables).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
