@@ -1,0 +1,264 @@
+---
+title: "Introduction to the DOMID package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to the DOMID package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## `DOMID` package - Overview
+The `DOMID` (Detecting Outliers in MIxed-type Data) R package includes functions that can be used for detecting outliers in data sets consisting of mixed-type data (i.e. both continuous and discrete variables). Some of the capabilities of the package include:
+
+- Generating artificial data sets of mixed-type data, including some marginal outliers in either the discrete or the continuous domain (or both), as well as joint outliers.
+- Calculating scores of outlyingness for both the continuous and the discrete features of a data set.
+- Detecting the marginal outliers in a mixed data set, when given scores of outlyingness for discrete & continuous features.
+- Finding associations among discrete variables and sets of continuous features.
+- Detecting joint outliers for a given association among a discrete and a set of continuous variables.
+
+Below, we present some of the functions included in `DOMID`, so that the user can familiarise themselves with the package.
+
+## Artificial data set generation - `gen_marg_joint_data`
+
+Suppose that we are interested in generating an artificial data set consisting of both discrete and continuous variables. We want this data set to include some outlying observations in both the discrete and the continuous domains (i.e. marginal outliers), as well as a few joint outliers. More precisely, we generate an artificial data set with 1000 observations, 5 discrete and 5 continuous variables. We set the second discrete variable to have 4 levels and the rest to have 3 discrete levels instead. The proportion of outliers in the data set is 5%, out of which 20% are joint outliers (thus the remaining 80% of outliers will be marginal outliers). 
+
+In order to define joint outliers, we need to impose at least one association among a discrete and a set of continuous variables. We set the first 2 discrete variables to be associated with the first 2 continuous variables each. The association type is set to `linear` for both existing associations. As a result, projecting the data set in the space spanned by the first 2 continuous variables and colouring each observation according to the level of the first or the second discrete variable should reveal a linear pattern. We generate this data set using a seed number of 1 for reproducibility, store it as `dt` and we then display its structure.
+```{r gen_marg_joint_data}
+library(DOMID)
+dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5,
+                          n_lvls = c(3, 4, 3, 3, 3), p_outs = 0.05, jp_outs = 0.2,
+                          assoc_target = c(1,2), assoc_vars = list(c(1, 2),c(1,2)),
+                          assoc_type = 'linear', seed_num = 1)
+str(dt)
+```
+As we can see, the data frame that has been generated includes 1000 observations. The first 5 variables are discrete with the number of levels we indicated plus an additional level; this level is introduced due to the generation of marginal outliers in the data set. In this case, the outliers that were generated in the discrete space will take levels that appear in very low frequencies and which are therefore indicative of an anomalous behaviour. Then, we have 5 continuous variables and finally an additional variable which is generated automatically by the function and which is a label of outlyingness. More precisely, a value of 0 indicates that the observation is not an outlier, a value of 1 indicates that the observation is a single marginal outlier (i.e. an outlier in either just the discrete or just the continuous domain), a value of 2 refers to the observation being a combined marginal outlier (i.e. an observation in both the discrete and the continuous spaces) and finally a value of 3 is assigned to joint outliers. Finally, in order to investigate whether the associations we imposed are indeed valid, we plot the first two continuous variables with points coloured according to the first and the second discrete variable levels. We make sure to discard any marginal outliers, so that the associations can be observed more easily.
+
+```{r data_gen_plots}
+require(ggplot2)
+assoc1_plot <- ggplot(dt[which(dt$V11 %in% c(0,3)), ], aes(x = V6, y = V7)) +
+  geom_point(aes(col=V1)) + 
+  xlab('Continuous Variable 1') + ylab('Continuous Variable 2') + 
+  guides(col=guide_legend(title="Discrete\nVariable 1\nLevel")) +
+  theme_bw()
+assoc2_plot <- ggplot(dt[which(dt$V11 %in% c(0,3)), ], aes(x = V6, y = V7)) +
+  geom_point(aes(col=V2)) + 
+  xlab('Continuous Variable 1') + ylab('Continuous Variable 2') + 
+  guides(col=guide_legend(title="Discrete\nVariable 2\nLevel")) +
+  theme_bw()
+assoc1_plot
+assoc2_plot
+```
+
+Indeed, we see that the associations have been generated correctly. As you may observe, there exist a few points which do not seem to agree with with the relationships that we imposed; these observations are the joint outliers that were generated.
+
+## Scores of outlyingness - `disc_scores` & `cont_scores`
+
+In order to be able to detect marginal outliers (i.e. outliers in either the discrete or the continuous space), we need to compute scores of outlyingness for the discrete and the continuous features of each observation. The function `disc_scores` takes as input a data set and the indices of the columns corresponding to the discrete variables. Notice that the discrete features must be of class `factor`; this is something that we do not need to worry about, since the function `gen_marg_joint_data` returns discrete variable columns of the aforementioned class. The output of `disc_scores` is a list of 3 elements. The first element is the parameter `MAXLEN` that is used for computing discrete scores. The second element in the list is a data frame with the discrete scores of outlyingness. Finally, the last element in the output list is a matrix of dimensions `nrow(data) x length(disc_cols)`, including the contribution of each discrete feature to the discrete score of outlyingness of each observation.
+
+```{r disc_scores}
+discrete_scores <- disc_scores(data = dt, disc_cols = c(1:5))
+# MAXLEN
+discrete_scores[[1]]
+# Discrete scores for observations 61-70
+discrete_scores[[2]][c(61:70), ]
+# Contributions of discrete features for observations 61-70
+discrete_scores[[3]][c(61:70), ]
+```
+
+Computing the continuous scores of outlyingness is easily done using the `cont_scores` function. The function makes use of the Extended Isolation Forest algorithm from the `isotree` package. The default hyperparameter values for the Extended Isolation Forest algorithm are `sample_size = 256`, `ntrees = 500`, `max_depth = 100` and finally `ndim = 0`, corresponding to `ndim = length(cont_cols)`. The output is a data frame with the continuous score for each observation, just like the 2nd element of the list that the `disc_scores` function returns.
+
+```{r cont_scores}
+continuous_scores <- cont_scores(data = dt, cont_cols = c(6:10), sample_size = 256,
+                                 ntrees = 500, ndim = 0, max_depth = 100, seed_num = 1)
+# Continuous scores for first 10 observations
+continuous_scores[c(1:10), ]
+```
+
+We can finally generate a "score profile" plot to see if the scores computed agree with whether each observation is an outlier or not. Indeed, we can see that marginal outliers appear to have higher discrete and continuous scores than inliers (i.e. non-outliers) and joint outliers, which are by definition not expected to have large scores of outlyingness.
+
+```{r score_profile}
+# Add everything in a data frame
+score_profile_dt <- data.frame('Type' = as.factor(dt[,11]),
+                               'Discrete_Score' = discrete_scores[[2]][, 2],
+                               'Continuous_Score' = continuous_scores[, 2])
+# Score profile plot
+score_profile_dt <- score_profile_dt[order(score_profile_dt$Type), ]
+ggplot(score_profile_dt, aes(x = Discrete_Score, y=Continuous_Score)) +
+  geom_point(aes(col = Type)) + 
+  xlab('Discrete Score') + ylab('Continuous Score') +
+  ggtitle("Score profile plot for generated data set") +
+  scale_color_brewer(labels = c('Inlier', 'Single Marginal\nOutlier',
+                                  'Combined Marginal\nOutlier', 'Joint Outlier'),
+                     palette = "Paired") + 
+  theme_bw()
+```
+
+## Detecting marginal outliers - `marg_outs_scores` & `marg_outs`
+
+In order to detect the marginal outliers in a data frame, we need to make use of the discrete and the continuous scores of outlyingness. The function `marg_outs_scores` uses the scores (both discrete & continuous), as well as the matrix of contributions and detects the observations with scores higher than the majority of data points, which are therefore much more likely outlying in either space. The output is a list consisting of 3 vectors, the first 2 corresponding to the row indices of outlying observations in just the discrete or just the continuous space and the 3rd corresponding to the combined marginal outliers (i.e. observations outlying in both domains). We use this function on our data frame to see if the observations flagged as marginal outliers are indeed so.
+
+```{r marg_outs_scores}
+marginal_outliers <- marg_outs_scores(data = dt,
+                                      disc_cols = c(1:5),
+                                      outscorediscdf = discrete_scores[[2]],
+                                      outscorecontdf = continuous_scores,
+                                      outscorediscdfcells = discrete_scores[[3]])
+table(dt[unique(unlist(marginal_outliers)), 11])
+```
+Indeed, our data set included 38 single marginal and 2 combined marginal outliers, meaning that the function has managed to detect these, while not erroneously flagging any inliers or joint outliers. An alternative option is to use the `marg_outs` function instead. This function only takes as input variables the data frame, the indices of the discrete variable columns and the indices of the continuous variable columns. It returns the same output as `marg_outs_scores`. In fact, `marg_outs` uses `marg_outs_scores`; their difference is that the former does not require inputting discrete or continuous scores of outlyingness, as these are calculated automatically using `disc_scores` and `cont_scores`. Using `marg_outs_scores` offers additional flexibility; for example, the user can set the hyperparameter values for the Extended Isolation Forest algorithm used in `cont_scores`, whereas `marg_outs` will use the aforementioned function with its deafult hyperparameter values. In this case, all hyperparameters involved in the calculation of the discrete and the continuous scores were set equal to their default values, so we expect `marg_outs` to return identical results to `marg_outs_scores`, as we show below.
+
+```{r marg_outs}
+marginal_outliers_2 <- marg_outs(data = dt,
+                                 disc_cols = c(1:5),
+                                 cont_cols = c(6:10))
+all(unique(unlist(marginal_outliers)) == unique(unlist(marginal_outliers_2)))
+```
+
+## Detecting associations between variables - `assoc_detect_xgb`
+
+Once we have detected the marginal outliers in our data set, we can look for joint outliers as well. These are defined as "innocent-looking" observations with their discrete features taking typical levels, while their continuous values are not too far away from the rest of the data points. As a result, their discrete and continuous scores are low enough and they cannot be detected together with the marginal outliers. However, these observations are outlying in the sense that they do not follow an existing "pattern" or "association" between features of distinct types. In practice, these associations will typically be defined between a discrete and a set of continuous features and they will (in most cases) be unknown to the user. Thus, we seek to detect these associations somehow.
+
+The function `assoc_detect_xgb` uses the `xgboost` classifier to perform multi-class classification of the levels of each discrete feature using all continuous variables in the data as predictors. The rationale behind the use of a gradient boosting algorithm is that it can also output the importance of each feature, which can serve as a very useful feature selection guide to the user, should they detect an association. The function performs Stratified K-Fold Cross Validation, where the default value is `K=5`. It also takes as input the continuous scores and the matrix of contributions, as well as the indices of the observations of marginal outliers. These are used for weighing the observations appropriately, based on whether they have been found to be marginally outlying. The loss function is a weighted version of the cross entropy loss:
+
+$$\mathcal{L}^W\left(\boldsymbol{X}_{D_j}, \hat{\boldsymbol{Y}} \right) = -\frac{1}{n} \sum\limits_{i=1}^n \sum\limits_{l=1}^{\ell_j}w_{i,j}\mathbb{1}\{ x_{i, D_j} = l \} \log\left(\hat{y}_{i,l} \right).$$
+
+In the above expression, $w_{i,j}$ is the weight of observation $i$ when performing classification of the $j$th discrete feature. Then, $\boldsymbol{X}_{D_j}$ is the $j$th discrete feature, $\hat{\boldsymbol{Y}}$ is a stochastic matrix where the $(k,l)$th entry represents the probability that the $k$th observation takes level $l$, $n$ is the total number of observations in the data set, $\ell_j$ is the total number of discrete levels that $\boldsymbol{X}_{D_j}$ takes and $\hat{y}_{i,l}$ is the $(i,l)$th entry of $\hat{\boldsymbol{Y}}$. The weights used are given below:
+
+$$    w_{i,j} = \left\{
+\begin{array}{ll}
+     2 - s_{C, (i,\cdot)} - \frac{c_{D,(i,j)}}{\max\limits_i\left\{c_{D,(i,j)}\right\}}, & 
+ \mathrm{if} \ i \in \mathcal{I}_D \cup \mathcal{I}_C\\[15pt]
+     2 - \min\limits_{i}\left\{s_{C,(i,\cdot)}\right\} - \frac{\min\limits_i\left\{c_{D,(i,j)}\right\}}{\max\limits_i\left\{c_{D,(i,j)}\right\}}, & \mathrm{otherwise.}\\
+\end{array} ,
+\right.$$
+
+In the above expression, $s_{C, (i, \cdot)}$ is the continuous score for the $i$th observation, $c_{D,(i,j)}$ is the contribution of the $j$th discrete variable to the discrete score of the $i$th observation and finally $\mathcal{I}_D$ and $\mathcal{I}_C$ are the sets of observations which are marginally outlying in the discrete and the continuous domains, respectively. Hence, we can see that data points in $\mathcal{I}_D \cup \mathcal{I}_C$ (i.e. marginal outliers) are assigned lower weights.
+
+In our case, we have defined 2 associations; these are between the first and the second discrete features with the first 2 continuous variables. We will still check for associations between any discrete and all continuous variables.
+
+```{r assoc_detect_xgb}
+assoctns <- assoc_detect_xgb(data = dt,
+                             K = 5,
+                             pred_inx = c(6:10),
+                             target_inx = c(1:5), 
+                             cont_scores = continuous_scores[, 2],
+                             contribs = discrete_scores[[3]],
+                             marg_outs = unique(unlist(marginal_outliers)))
+```
+
+We explore the output of `assoc_detect_xgb`; the list `assoctns` that we obtain includes 3 elements. The first element includes summary statistics for the contribution (importance) of all continuous variables when seeking to classify each of the discrete variables used as targets, across all `K` folds. In our case, we can see that the average contribution is significantly higher for `V6` and `V7` (these are the first 2 continuous variables in the data set) than for any other continuous feature when targeting the first or the second discrete variable. If we look at the results for the other 3 discrete features, we see that contributions there are much closer for all 5 continuous features. Even if this could easily be misinterpreted as a sign of an association, the 2nd element of `assoctns` is a data frame including the misclassification rates for each target discrete variable, from which it is evident that only the first 2 discrete features are somehow related to a set of continuous attributes (given the low misclassification rates).
+
+```{r associations_eda}
+# Plot contributions for each variable
+contribs <- list(assoctns[[1]][[1]], assoctns[[1]][[2]],
+                 assoctns[[1]][[3]], assoctns[[1]][[4]],
+                 assoctns[[1]][[5]])
+contribs <- lapply(contribs, function(dat) {
+  dat$type <- colnames(dat)[1]
+  colnames(dat)[1] <- "variable"
+  dat
+})
+contribs <- do.call(rbind, contribs)
+contribs$Target <- rep(1:5, each = 5)
+
+# Plot contributions
+ggplot(contribs, aes(variable, Avg_Contrib)) +
+  geom_col(fill = 'cyan3', col='black') +
+  facet_wrap(~Target, scales = "free_x",
+             labeller = as_labeller(c('1' = "Discrete Variable 1",
+                                      '2' = "Discrete Variable 2",
+                                      '3' = "Discrete Variable 3",
+                                      '4' = "Discrete Variable 4",
+                                      '5' = "Discrete Variable 5"))) +
+  xlab('Continuous Variable') +
+  ylab('Average Contribution') + 
+  ggtitle('Contributions of continuous variables\nto classification of discrete features') +
+  theme_bw()
+
+# Misclassification rates
+for (i in 1:5){
+  cat('Misclassification rate for target discrete variable',
+      i, ':', assoctns[[2]][i, 3], '\n')
+}
+```
+The third and final output of the `assoc_detect_xgb` function is a vector of length equal to the number of observations, including the weights that were assigned to each observation when targeting the discrete variables. We only give a summary of the weights used for the classification of the first discrete feature, distinguishing between marginal and non-marginal outliers; as expected, the weights for the marginal outliers are lower in general. The weights for the non-marginal outliers are also all equal, which is something expected by the way the observations were weighed. The rationale is that assuming none of these observations have been previously flagged as outlying in either of the 2 domains, they should contribute equally to the whole classification process.
+
+```{r assoc_weights}
+# Summary for marginal outliers
+summary(assoctns[[3]][[1]][unique(unlist(marginal_outliers))])
+
+# Summary for non-marginal outliers
+summary(assoctns[[3]][[1]][-unique(unlist(marginal_outliers))])
+```
+
+## Detecting joint outliers - `kde_classif`, `elbow_angle`, `consec_angles` & `joint_outs`
+
+Based on our findings above, it is safe to assert that there exists an association between the first and the second discrete variables and the first 2 continuous features. However, we still need to devise a method for detecting the observations (if any) which do not conform to the pattern that has been identified. Our strategy involves using KDE classification and looking at the misclassified observations among the data points which were not flagged as marginal outliers. In our case, the classes are overlapping - indeed, if we look back at the projection of the data in the first 2 continuous features that we plotted once we generated our data, the classes are separable but points on the boundaries can also be seen to "blend" with the neighbouring class. As a result of this "overlap", we expect a much larger number of misclassifications than the actual number of joint outliers. At the same time, these points close to the boundary are misclassified but the values of the kernel density estimators under the true and the falsely predicted classes will not differ much. Thus, we define the KDE ratio:
+
+$$\Lambda_i = \frac{\max\limits_{l=1, \dots, \ell_j}\hat{f}^j_l\left(\boldsymbol{X}_{i, C_\mathcal{J}}\right)}{\hat{f}^j_{l^\mathrm{true}}\left(\boldsymbol{X}_{i, C_\mathcal{J}}\right)}.$$
+
+The KDE ratio will be equal to a unit if the maximum kernel density estimator is achieved for the true level $\ell^\mathrm{true}$, otherwise it will exceed 1. Notice that $\hat{f}_l^j$ refers to the kernel density estimator for the $l$th level of the $j$th discrete variable, while $\boldsymbol{X}_{i, C_\mathcal{J}}$ is the vector of values of the continuous variables $C_\mathcal{J}$ which are associated with the $j$th discrete variable, for the $i$th observation.
+
+Our goal is to find an optimal threshold value $\Lambda^*_i$ value, such that the joint outliers are the misclassified observations for which $\Lambda_i > \Lambda^*_i$. This way, we can restrict the number of misclassified points close to the borders to be treated as joint outliers. The function `kde_classif` uses the `locfit` package to perform KDE classification of a discrete variable given a set of associated continuous features. The function requires specifying which observations are marginally outlying, so that these are discarded from the sample. Moreover, it lets the user specify the kernel to be used (by default the Gaussian kernel is used), as well as the value of the parameter `alpha_val` which is related to the adaptive nearest neighbours bandwidth that is used by `locfit` (see the package documentation for more details). Finally, `kde_classif` requires a threshold parameter `Lambda_i`; this can either be a number at least equal to 1, the value 0 (default), or a vector of values. Setting this equal to a value of 1 will simply return the misclassified observations, then any value larger than that will impose the additional constraint that $\Lambda_i$ should be greater than the value of `Lambda_i` and will return these observations instead. The default value `Lambda_i = 0` will return the misclassified observations for $\Lambda^*_i = 1, 1.5, \dots, 20$. Any other vector will return the misclassified points for various threshold values specified. We set `Lambda_i = 0` and then we plot the number of misclassified observations for each $\Lambda^*_i$.
+
+```{r kde_classif}
+kde_classifications <- kde_classif(data = dt,
+                                   target_inx = 1,
+                                   pred_inx = c(6, 7),
+                                   marg_outs = unique(unlist(marginal_outliers)),
+                                   Lambda_i = 0,
+                                   kernel = "gauss",
+                                   alpha_val = 0.3)
+plot(x = seq(1, 20, by =.5), y = kde_classifications[[1]],
+     type = 'l', lwd = 2, col = 'navy',
+     xlab = expression(Lambda[i]~"*"),
+     ylab = "Misclassified Observations",
+     main = "Misclassified observations for varying threshold values")
+```
+
+The plot above reveals that a suitable $\Lambda^*_i$ value should be somewhere around 5. We have introduced the Method of Consecutive Angles, which is capable of determining a $\Lambda^*_i$ value that gives reasonable results using the angles between consecutive line segments that join the amount of misclassified points for consecutive $\Lambda^*_i$ values. This method, implemented in the function `consec_angles`, requires a vector of observed values, the range of values for which these observations were made (in this case that is the sequence of values from 1 up to 20 in steps of half a unit) and 2 tolerance parameters. The first one, `drop_tol`, accounts for the fact that the rate of decrease of the misclassified observations for 2 consecutive $\Lambda^*_i$ values may be the same but if the actual different (or drop) exceeds a tolerated level `drop_tol`, it cannot be considered as insignificant. We use the default value of `drop_tol = 3`. Then, `range_tol` controls the maximum value of $Lambda^*_i$ for which we want to use the method of consecutive angles. Here, we take the default `range_tol = 21` which corresponds to the 21st element of the sequence 1, 1.5, $\dots$, 20. This is the value $\Lambda^*_i = 11$, meaning that if the method of consecutive angles finds a $\Lambda^*_i$ value over 11, it will return the elbow point of the curve instead, using the `kneedle` algorithm. We calculate $\Lambda_i^*$ for our data set below. We also output the indices for the observations with a KDE ratio over the $\Lambda^*_i$ value returned.
+
+```{r consec_angles}
+Lambda_star <- consec_angles(vec = kde_classifications[[1]],
+                             range = seq(1, 20, by = .5),
+                             drop_tol = 3,
+                             range_tol = 21)
+print(Lambda_star)
+
+# Use Lambda_star
+Lambda_star_inx <- match(Lambda_star, seq(1, 20, by = .5))
+# Joint outliers detected
+joint_outs_det <- kde_classifications[[2]][[Lambda_star_inx]]
+print(length(joint_outs_det))
+summary(dt[joint_outs_det, ])
+```
+Indeed we can see above that just a few observations remained by demanding that the KDE ratio exceeds the $\Lambda^*_i$ value found by the method of consecutive angles and all these are joint outliers. However, the method of consecutive angles is not always ideal; in fact, it turns out that in some instances it may be better to "sacrifice" some inliers just for the sake of not missing many joint outliers. In any case, we provide the user with the `elbow_angle` function, which returns the value of the angle (in degrees) between the line segments joining the number of misclassified observations for $\Lambda_i^* = 1$ and $\Lambda_i^* = \Lambda_\mathrm{elbow}$ and for $\Lambda_i^* = \Lambda_\mathrm{elbow}$ and $\Lambda_i^* = 20$. Notice that $\Lambda_\mathrm{elbow}$ is the value of $\Lambda_i$ for which an elbow in the curve of misclassified points is being observed. This value turns out to be very useful for determining the method to be used, with the number of discrete levels of the target discrete feature being of crucial importance. If the number of levels is larger than 5 for instance, the method of consecutive angles is the best option but for a smaller number of levels, going for $\Lambda_i^*$ equal to a small value above 1 returns better results. As an illustration, we calculate the elbow angle for our misclassifications.
+
+```{r elbow_angle}
+angle <- elbow_angle(vec = kde_classifications[[1]],
+                     range = seq(1, 20, by = .5))
+print(angle)
+```
+Now, we are ready to detect the joint outliers in our data set. The function `joint_outs` can detect the joint outliers for given associations between discrete and continuous features. The parameter `assoc_target` takes as input a vector of target discrete variables, which have been found to be associated with sets of continuous variables. Then, `assoc_vars` will be a list including the corresponding vectors of the continuous features associated with each target discrete variable that was earlier defined in `assoc_target`. The `method` argument can take 3 levels; `"consec_angles"`, `"conservative"` or `"bin"`. The first option will choose a suitable value for the threshold parameter $\Lambda_i^*$ using the method of consecutive angles, as described earlier. The option `"conservative"` sets by default $\Lambda^*_i = 3$, which is a rather conservative choice that is found to perform well in some cases and finally `method = "bin"` refers to the case of a binary target variable, where $\Lambda^*_i = 2$ is chosen instead, due to poor performance that has been empirically observed for higher threshold values. The parameters `drop_tol` and `range_tol` can also be specified by the user. The `joint_outs` function will essentially make use of `kde_classif` with the default hyperparameter choices for `kernel` and `alpha_val`. If `method` is set equal to `"consec_angles"`, the parameter `Lambda_i` will also be set to its default of 0, otherwise for `method = "conservative"` or for `method = "bin"`, `Lambda_i` will be set equal to 3 or 2, respectively. Them `drop_tol` and `range_tol` can be specified by the user. The output of `kde_classif` will be returned if `method = "conservative"` or if `method = "bin"`, while for `method = "consec_angles"`, the `consec_angles` function will be used to determine what a suitable $\Lambda^*_i$ value should be and the output corresponding to this value will be given to the user. However, if the user wishes to select their preferred `method` for each association according to the value of the elbow angle, this process needs to be done manually and the `elbow_angle` function should be used as well. In order to wrap things up, we finally detect the joint outliers based on the associations we found between the first and the second discrete features with the first 2 continuous variables. The results reveal that all joint outliers were detected, alongside a very small number of inliers which were falsely flagged to be joint outliers.
+
+```{r joint_outs}
+joint_outliers <- joint_outs(data = dt,
+                             marg_outs = unique(unlist(marginal_outliers)),
+                             assoc_target = c(1, 2),
+                             assoc_vars = list(c(6, 7), c(6, 7)),
+                             method = "consec_angles",
+                             drop_tol = 3,
+                             range_tol = 21)
+print(length(joint_outliers))
+table(dt[joint_outliers, 11])
+```
+## Summary
+
+We have introduced the `DOMID` (Detecting Outliers in MIxed-type Data) R package and have shown how it can be used for finding outlying observations in a data set consisting of mixed-type data (i.e. continuous and discrete features). We have used an artificially generated data set as an example on which the main functions were applied. The main functions included in the package are described here but we encourage the user to read the documentation should anything be unclear.
