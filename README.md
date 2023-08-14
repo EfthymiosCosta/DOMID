@@ -10,5 +10,6 @@ The `DOMID` (Detecting Outliers in MIxed-type Data) `R` package includes functio
 # Installation
 The package can be installed using [devtools](https://www.r-project.org/nosvn/pandoc/devtools.html).
 ```R
-devtools::install_github('EfthymiosCosta/DOMID')
+# Set build_vignettes = FALSE if you don't want to install the vignette.
+devtools::install_github('EfthymiosCosta/DOMID', build_vignettes = TRUE)
 ```
