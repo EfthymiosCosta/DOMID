@@ -9,7 +9,9 @@ marg_outs_scores(
   disc_cols,
   outscorediscdf,
   outscorecontdf,
-  outscorediscdfcells
+  outscorediscdfcells,
+  rho = 0.2,
+  epsilon = 0.02
 )
 }
 \arguments{
@@ -29,6 +31,15 @@ the continuous scores of outlyingness.}
 
 \item{outscorediscdfcells}{Matrix of contributions of discrete variables to the discrete scores of
 outlyingness. Should be of dimension (nrow(data) x length(disc_cols)) and of class 'data.frame'.}
+
+\item{rho}{Maximum proportion of outliers believed to be in the data set. Used together with epsilon
+to determine a stopping criterion for the search for marginal outliers based on scores of outlyingness.
+Must be a real number in range (0, 0.5) with rho + epsilon <= 0.5. A smaller rho assumes less outliers.
+Defaults to 0.20 (20\%).}
+
+\item{epsilon}{Additional proportion of outliers that we are willing to tolerate. Must be a number
+in the range (0, 0.25) with rho + epsilon <= 0.5. Must also be smaller than rho, as it only represents
+the additional error. Defaults to 0.02 (2\%).}
 }
 \value{
 A list with 3 vectors; the vector "Discrete" includes the row indices
@@ -50,6 +61,6 @@ calculating the scores of outlyingness for either the discrete or the continuous
 dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
 discrete_scores <- disc_scores(data = dt, disc_cols = c(1:5))
 continuous_scores <- cont_scores(data = dt, cont_cols = c(6:10))
-marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]])
+marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]], rho = 0.20, epsilon = 0.02)
 
 }

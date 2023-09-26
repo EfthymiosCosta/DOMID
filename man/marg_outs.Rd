@@ -4,7 +4,7 @@
 \alias{marg_outs}
 \title{Detection of marginal outliers.}
 \usage{
-marg_outs(data, disc_cols, cont_cols)
+marg_outs(data, disc_cols, cont_cols, rho = 0.2, epsilon = 0.02)
 }
 \arguments{
 \item{data}{Data frame of mixed-type data. Should be of class 'data.frame'.}
@@ -12,6 +12,15 @@ marg_outs(data, disc_cols, cont_cols)
 \item{disc_cols}{Column indices of discrete variables.}
 
 \item{cont_cols}{Column indices of continuous variables.}
+
+\item{rho}{Maximum proportion of outliers believed to be in the data set. Used together with epsilon
+to determine a stopping criterion for the search for marginal outliers based on scores of outlyingness.
+Must be a real number in range (0, 0.5) with rho + epsilon <= 0.5. A smaller rho assumes less outliers.
+Defaults to 0.20 (20\%). See marg_outs_scores for more information.}
+
+\item{epsilon}{Additional proportion of outliers that we are willing to tolerate. Must be a number
+in the range (0, 0.25) with rho + epsilon <= 0.5. Must also be smaller than rho, as it only represents
+the additional error. Defaults to 0.02 (2\%). See marg_outs_scores for more information.}
 }
 \value{
 A list with 3 vectors; the vector "Discrete" includes the row indices
@@ -30,6 +39,6 @@ that have been computed using different methods.
 }
 \examples{
 dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
-marg_outs(data = dt, disc_cols = c(1:5), cont_cols = c(6:10))
+marg_outs(data = dt, disc_cols = c(1:5), cont_cols = c(6:10), rho = 0.20, epsilon = 0.02)
 
 }

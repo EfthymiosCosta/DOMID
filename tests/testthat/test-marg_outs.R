@@ -14,7 +14,8 @@ dt <- gen_marg_joint_data(n_obs = rows,
                           seed_num = 1)
 marginal_outliers <- marg_outs(data = dt,
                                disc_cols = c(1:disc_vars),
-                               cont_cols = c((disc_vars+1):(disc_vars+cont_vars)))
+                               cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                               rho = 0.20, epsilon = 0.02)
 test_that("Correct output object.", {
   expect_equal(is.list(marginal_outliers), TRUE)
   expect_equal(length(marginal_outliers), 3)
@@ -32,4 +33,54 @@ test_that("Incorrect input argument values.", {
                          disc_cols = c(1:disc_vars),
                          cont_cols = c((disc_vars+1):(disc_vars+cont_vars))),
                "Data set should be of class 'data.frame'.")
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = '0.20', epsilon = 0.02),
+               "rho must be a number between 0 and 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                        disc_cols = c(1:disc_vars),
+                        cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                        rho = 0.20, epsilon = '0.02'),
+               "epsilon must be a number between 0 and 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = 0.60, epsilon = 0),
+               "Incorrect value for rho - must be between 0 and 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = 0, epsilon = 0),
+               "Incorrect value for rho - must be between 0 and 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = -0.1, epsilon = 0),
+               "Incorrect value for rho - must be between 0 and 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = 0.20, epsilon = -0.25),
+               "Incorrest value for epsilon - must be between 0 and 0.25.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = 0.20, epsilon = 0.30),
+               "Incorrest value for epsilon - must be between 0 and 0.25.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = 0.20, epsilon = 0.20),
+               "rho must be greater than epsilon and their sum should be at most 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = 0.20, epsilon = 0.21),
+               "rho must be greater than epsilon and their sum should be at most 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         rho = 0.40, epsilon = 0.20),
+               "rho must be greater than epsilon and their sum should be at most 0.50.", fixed = TRUE)
 })
