@@ -7,6 +7,8 @@ The `DOMID` (Detecting Outliers in MIxed-type Data) `R` package includes functio
 - Finding associations among discrete variables and sets of continuous features.
 - Detecting joint outliers for a given association among a discrete and a set of continuous variables.
 
+A detailed description of the methods included in the package can be found in [Costa, E., & Papatsouma, I. (2023). Outlier detection for mixed-type data: A novel approach.](https://arxiv.org/abs/2308.09562)
+
 # Installation
 The package can be installed using [devtools](https://www.r-project.org/nosvn/pandoc/devtools.html).
 ```R
