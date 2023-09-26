@@ -4,7 +4,7 @@
 \alias{marg_outs}
 \title{Detection of marginal outliers.}
 \usage{
-marg_outs(data, disc_cols, cont_cols, rho = 0.2, epsilon = 0.02)
+marg_outs(data, disc_cols, cont_cols, alpha = 0.01, rho = 0.2, epsilon = 0.02)
 }
 \arguments{
 \item{data}{Data frame of mixed-type data. Should be of class 'data.frame'.}
@@ -12,6 +12,11 @@ marg_outs(data, disc_cols, cont_cols, rho = 0.2, epsilon = 0.02)
 \item{disc_cols}{Column indices of discrete variables.}
 
 \item{cont_cols}{Column indices of continuous variables.}
+
+\item{alpha}{Significance level for the simultaneous Multinomial confidence intervals constructed for calculating discrete scores,
+determining what the frequency thresholds should be for itemsets of different length. Must be a positive real,
+at most equal to 0.20. A greater value leads to a much more conservative algorithm that also penalises less
+infrequent itemsets. Default value is 0.01.}
 
 \item{rho}{Maximum proportion of outliers believed to be in the data set. Used together with epsilon
 to determine a stopping criterion for the search for marginal outliers based on scores of outlyingness.
@@ -39,6 +44,6 @@ that have been computed using different methods.
 }
 \examples{
 dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
-marg_outs(data = dt, disc_cols = c(1:5), cont_cols = c(6:10), rho = 0.20, epsilon = 0.02)
+marg_outs(data = dt, disc_cols = c(1:5), cont_cols = c(6:10), alpha=0.01, rho = 0.20, epsilon = 0.02)
 
 }

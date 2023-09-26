@@ -13,7 +13,8 @@ dt <- gen_marg_joint_data(n_obs = rows,
                           assoc_type="linear",
                           seed_num = 1)
 discrete_scores <- disc_scores(data = dt,
-                               disc_cols = c(1:disc_vars))
+                               disc_cols = c(1:disc_vars),
+                               alpha = 0.01)
 test_that("Correct number of output dimensions & correct output type.", {
   expect_equal(is.list(discrete_scores), TRUE)
   expect_equal(length(discrete_scores), 3)
@@ -30,4 +31,14 @@ test_that("Incorrect input variable values error messages.", {
                "Discrete variables should be of class 'factor'.")
   expect_error(disc_scores(data = dt, disc_cols = c((disc_vars - 1):(disc_vars + 2))),
                "Discrete variables should be of class 'factor'.")
+  expect_error(disc_scores(data = dt, disc_cols = c(1:disc_vars), alpha = 0),
+               "alpha should be positive and at most equal to 0.20.")
+  expect_error(disc_scores(data = dt, disc_cols = c(1:disc_vars), alpha = -0.1),
+               "alpha should be positive and at most equal to 0.20.")
+  expect_error(disc_scores(data = dt, disc_cols = c(1:disc_vars), alpha = 0.21),
+               "alpha should be positive and at most equal to 0.20.")
+  expect_error(disc_scores(data = dt, disc_cols = c(1:disc_vars), alpha = '0.01'),
+               "alpha should be of class 'numeric'.")
+  expect_error(disc_scores(data = dt, disc_cols = c(1:disc_vars), alpha = c(0.01, 0.1)),
+               "alpha should be of unit length.")
 })

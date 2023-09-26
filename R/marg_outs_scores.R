@@ -20,6 +20,10 @@
 #' the continuous scores of outlyingness.
 #' @param outscorediscdfcells Matrix of contributions of discrete variables to the discrete scores of
 #' outlyingness. Should be of dimension (nrow(data) x length(disc_cols)) and of class 'data.frame'.
+#' @param alpha Significance level for the simultaneous Multinomial confidence intervals constructed for calculating discrete scores,
+#' determining what the frequency thresholds should be for itemsets of different length. Must be a positive real,
+#' at most equal to 0.20. A greater value leads to a much more conservative algorithm that also penalises less
+#' infrequent itemsets. Default value is 0.01.
 #' @param rho Maximum proportion of outliers believed to be in the data set. Used together with epsilon
 #' to determine a stopping criterion for the search for marginal outliers based on scores of outlyingness.
 #' Must be a real number in range (0, 0.5) with rho + epsilon <= 0.5. A smaller rho assumes less outliers.
@@ -38,9 +42,9 @@
 #' @examples dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
 #' discrete_scores <- disc_scores(data = dt, disc_cols = c(1:5))
 #' continuous_scores <- cont_scores(data = dt, cont_cols = c(6:10))
-#' marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]], rho = 0.20, epsilon = 0.02)
+#' marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]], alpha = 0.01, rho = 0.20, epsilon = 0.02)
 #'
-marg_outs_scores <- function(data, disc_cols, outscorediscdf, outscorecontdf, outscorediscdfcells, rho = 0.20, epsilon = 0.02){
+marg_outs_scores <- function(data, disc_cols, outscorediscdf, outscorecontdf, outscorediscdfcells, alpha = 0.01, rho = 0.20, epsilon = 0.02){
   ### INPUT CHECKS ###
   if (!is.data.frame(data)){
     stop("Data set should be of class 'data.frame'.")
@@ -73,6 +77,13 @@ marg_outs_scores <- function(data, disc_cols, outscorediscdf, outscorecontdf, ou
   }
   if ((rho + epsilon) > 0.50 | (rho <= epsilon)){
     stop("rho must be greater than epsilon and their sum should be at most 0.50.")
+  }
+  stopifnot("alpha should be of class 'numeric'." = is.numeric(alpha))
+  if (length(alpha) > 1){
+    stop("alpha should be of unit length.")
+  }
+  if (alpha <= 0 | alpha > 0.20){
+    stop("alpha should be positive and at most equal to 0.20.")
   }
   ### END OF CHECKS ###
   # First construct the thresholds data frame for unlikely itemsets of length 1

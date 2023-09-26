@@ -83,4 +83,34 @@ test_that("Incorrect input argument values.", {
                          cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
                          rho = 0.40, epsilon = 0.20),
                "rho must be greater than epsilon and their sum should be at most 0.50.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = 0,
+                         rho = 0.20, epsilon = 0.02),
+               "alpha should be positive and at most equal to 0.20.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = -0.1,
+                         rho = 0.20, epsilon = 0.02),
+               "alpha should be positive and at most equal to 0.20.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = 0.21,
+                         rho = 0.20, epsilon = 0.02),
+               "alpha should be positive and at most equal to 0.20.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = '0.01',
+                         rho = 0.20, epsilon = 0.02),
+               "alpha should be of class 'numeric'.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = c(0.01, 0.1),
+                         rho = 0.20, epsilon = 0.02),
+               "alpha should be of unit length.", fixed = TRUE)
 })
