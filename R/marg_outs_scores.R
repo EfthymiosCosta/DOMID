@@ -92,7 +92,7 @@ marg_outs_scores <- function(data, disc_cols, outscorediscdf, outscorecontdf, ou
                             stringsAsFactors = FALSE)
   for (cat_col in disc_cols){
     combs <- length(unique(data[,cat_col]))
-    s <- floor(as.numeric(nrow(data) * DescTools::MultinomCI(rep(nrow(data)/combs, combs), conf.level=0.99)[1,2]))
+    s <- floor(as.numeric(nrow(data) * DescTools::MultinomCI(rep(nrow(data)/combs, combs), conf.level=(1-alpha))[1,2]))
     thresh_1lvl <- rbind(thresh_1lvl, data.frame('CatVariable' = cat_col, 'Thresh' = s))
   }
   # K-Means approach on our data frame

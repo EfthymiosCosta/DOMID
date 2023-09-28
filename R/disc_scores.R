@@ -8,13 +8,16 @@
 #' @param alpha Significance level for the simultaneous Multinomial confidence intervals constructed, determining what the
 #' frequency thresholds should be for itemsets of different length. Must be a positive real, at most equal to 0.20. A
 #' greater value leads to a much more conservative algorithm that also penalises less infrequent itemsets. Default value is 0.01.
+#' @param MAXLEN Maximum itemset sequence length to be considered. Default value is 0 which calculates MAXLEN according to a criterion
+#' on the sparsity caused by the total combinations that can be encountered as sequences of greater length are taken into account.
+#' Otherwise, MAXLEN can take any value from 1 up to the total number of discrete variables included in the data set.
 #'
 #' @return A list with 3 elements, the first being MAXLEN, the 2nd being the discrete scores of outlyingness and the 3rd being the matrix of contributions of each discrete variable to the discrete score of each observation.
 #' @export
 #'
 #' @examples dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
-#' disc_scores(data = dt, disc_cols = c(1:5), alpha = 0.01)
-disc_scores <- function(data, disc_cols, alpha = 0.01){
+#' disc_scores(data = dt, disc_cols = c(1:5), alpha = 0.01, MAXLEN = 0)
+disc_scores <- function(data, disc_cols, alpha = 0.01, MAXLEN = 0){
   ### INPUT CHECKS ###
   if (!is.data.frame(data)){
     stop("Data set should be of class 'data.frame'.")
@@ -32,26 +35,38 @@ disc_scores <- function(data, disc_cols, alpha = 0.01){
   if (alpha <= 0 | alpha > 0.20){
     stop("alpha should be positive and at most equal to 0.20.")
   }
+  if (length(MAXLEN) > 1){
+    stop("MAXLEN should be an integer at most equal to the number of discrete variables.")
+  }
+  if (MAXLEN %% 1 !=0){
+    stop("MAXLEN should be an integer at most equal to the number of discrete variables.")
+  }
+  if (MAXLEN < 0 | MAXLEN > length(disc_cols)){
+    stop("MAXLEN should be an integer at most equal to the number of discrete variables.")
+  }
   ### END OF CHECKS ###
   # Get all power sets up to length MAXLEN
   # For MAXLEN we need to make sure that the threshold value s >= 2
   # In order to do that, we take combinations of variables and calculate s
   # Until we achieve s < 2
-  nlevelsvec <- c()
-  for (i in disc_cols){
-    nlevelsvec <- c(nlevelsvec, length(levels(data[,i])))
-  }
-  if (length(disc_cols)==1){
-    MAXLEN <- 1
-  } else {
-    for (i in 1:length(disc_cols)){
-      combs <- prod(sort(nlevelsvec, decreasing = TRUE)[1:i])
-      s <- floor(as.numeric(nrow(data) * DescTools::MultinomCI(rep(nrow(data)/combs, combs), conf.level=(1-alpha))[1,2]))
-      if (s < 2){
-        MAXLEN <- i-1
-        break
-      } else {
-        MAXLEN <- i
+  # The above of course only applies as long as MAXLEN is set equal to 0
+  if (MAXLEN == 0){
+    nlevelsvec <- c()
+    for (i in disc_cols){
+      nlevelsvec <- c(nlevelsvec, length(levels(data[,i])))
+    }
+    if (length(disc_cols)==1){
+      MAXLEN <- 1
+    } else {
+      for (i in 1:length(disc_cols)){
+        combs <- prod(sort(nlevelsvec, decreasing = TRUE)[1:i])
+        s <- floor(as.numeric(nrow(data) * DescTools::MultinomCI(rep(nrow(data)/combs, combs), conf.level=(1-alpha))[1,2]))
+        if (s < 2){
+          MAXLEN <- i-1
+          break
+        } else {
+          MAXLEN <- i
+        }
       }
     }
   }

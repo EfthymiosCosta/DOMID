@@ -4,7 +4,7 @@
 \alias{disc_scores}
 \title{Discrete scores of outlyingness}
 \usage{
-disc_scores(data, disc_cols, alpha = 0.01)
+disc_scores(data, disc_cols, alpha = 0.01, MAXLEN = 0)
 }
 \arguments{
 \item{data}{Data frame including discrete variables on which outlier detection will be implemented. Should be of class 'data.frame'.}
@@ -14,6 +14,10 @@ disc_scores(data, disc_cols, alpha = 0.01)
 \item{alpha}{Significance level for the simultaneous Multinomial confidence intervals constructed, determining what the
 frequency thresholds should be for itemsets of different length. Must be a positive real, at most equal to 0.20. A
 greater value leads to a much more conservative algorithm that also penalises less infrequent itemsets. Default value is 0.01.}
+
+\item{MAXLEN}{Maximum itemset sequence length to be considered. Default value is 0 which calculates MAXLEN according to a criterion
+on the sparsity caused by the total combinations that can be encountered as sequences of greater length are taken into account.
+Otherwise, MAXLEN can take any value from 1 up to the total number of discrete variables included in the data set.}
 }
 \value{
 A list with 3 elements, the first being MAXLEN, the 2nd being the discrete scores of outlyingness and the 3rd being the matrix of contributions of each discrete variable to the discrete score of each observation.
@@ -24,5 +28,5 @@ ODMAD algorithm of Koufakou & Georgiopoulos (2010).
 }
 \examples{
 dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
-disc_scores(data = dt, disc_cols = c(1:5), alpha = 0.01)
+disc_scores(data = dt, disc_cols = c(1:5), alpha = 0.01, MAXLEN = 0)
 }

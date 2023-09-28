@@ -15,6 +15,7 @@ dt <- gen_marg_joint_data(n_obs = rows,
 marginal_outliers <- marg_outs(data = dt,
                                disc_cols = c(1:disc_vars),
                                cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                               alpha = 0.01, MAXLEN = 0,
                                rho = 0.20, epsilon = 0.02)
 test_that("Correct output object.", {
   expect_equal(is.list(marginal_outliers), TRUE)
@@ -113,4 +114,28 @@ test_that("Incorrect input argument values.", {
                          alpha = c(0.01, 0.1),
                          rho = 0.20, epsilon = 0.02),
                "alpha should be of unit length.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = 0.01, MAXLEN = c(0, 0.2),
+                         rho = 0.20, epsilon = 0.02),
+               "MAXLEN should be an integer at most equal to the number of discrete variables.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = 0.01, MAXLEN = 0.8,
+                         rho = 0.20, epsilon = 0.02),
+               "MAXLEN should be an integer at most equal to the number of discrete variables.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = 0.01, MAXLEN = -1,
+                         rho = 0.20, epsilon = 0.02),
+               "MAXLEN should be an integer at most equal to the number of discrete variables.", fixed = TRUE)
+  expect_error(marg_outs(data = dt,
+                         disc_cols = c(1:disc_vars),
+                         cont_cols = c((disc_vars+1):(disc_vars+cont_vars)),
+                         alpha = 0.01, MAXLEN = (disc_vars + 1),
+                         rho = 0.20, epsilon = 0.02),
+               "MAXLEN should be an integer at most equal to the number of discrete variables.", fixed = TRUE)
 })
