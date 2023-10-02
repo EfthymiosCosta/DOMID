@@ -12,7 +12,7 @@ rm_likely_1lvl <- function(disc_pts_cat, outscoredfcells, thresh_1lvl){
     # Non-zero column index
     col_inx <- which(outscoredfcells[pts,]!=0)
     thresh_val <- thresh_1lvl[col_inx, 2]
-    if (1/outscoredfcells[pts,col_inx]>1*thresh_val){
+    if (1/outscoredfcells[pts,col_inx]>0.90*thresh_val){
       likely_1lvl_items <- c(likely_1lvl_items, pts)
     }
   }
