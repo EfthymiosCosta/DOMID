@@ -11,7 +11,7 @@ rm_likely_1lvl <- function(disc_pts_cat, outscoredfcells, thresh_1lvl){
   for (pts in intersect(disc_pts_cat, which(apply(outscoredfcells, FUN=function(c)sum(c!=0)==1, 1)))){
     # Non-zero column index
     col_inx <- which(outscoredfcells[pts,]!=0)
-    thresh_val <- thresh_1lvl[which(thresh_1lvl[,1]==col_inx), 2]
+    thresh_val <- thresh_1lvl[col_inx, 2]
     if (1/outscoredfcells[pts,col_inx]>0.90*thresh_val){
       likely_1lvl_items <- c(likely_1lvl_items, pts)
     }
