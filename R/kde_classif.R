@@ -19,6 +19,9 @@
 #' @param kernel Kernel chosen for KDE. Default choice is 'gauss' for Gaussian kernel. Other options are 'rect', 'trwt', 'tria', 'epan' or 'bisq' for Rectangular, Triweight, Triangle, Epanechnikov and Bisquare kernels - see the documentation of locfit for more details.
 #' @param alpha_val The value of alpha that determines the kernel bandwidth. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where k = floor(n*alpha_val) and n is
 #' the number of observations possessing each target index level of interest. Default value is 0.3 and the value can be between 0 and 1 - see the documentation of locfit for more details.
+#' @param maxk Controls space assignment for evaluation structures for the locfit evaluation. See locfit documentation and
+#' Loader, C. (1999) Local Regression and Likelihood, Springer. for more details. If you get errors or warnings about `Insufficient vertex space',
+#' locfit's default assigment can be increased by increasing 'maxk'. Default value is 1000.
 #'
 #' @return A list with 2 elements. The first element is a vector of length
 #' equal to length(Lambda_i), including the number of misclassifications for which the KDE ratio exceeds
@@ -34,9 +37,9 @@
 #' marginal_outs <- unique(unlist(marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]])))
 #' kde_classification <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 0, kernel = 'gauss', alpha_val = 0.3)
 #' kde_classification2 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = c(1.5, 5, 7.3, 21.1), kernel = 'epan', alpha_val = 0.5)
-#' kde_classification3 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 8, kernel = 'rect', alpha_val = 0.9)
+#' kde_classification3 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 8, kernel = 'rect', alpha_val = 0.9, maxk = 2000)
 kde_classif <- function(data, target_inx, pred_inx, marg_outs,
-                        Lambda_i = 0, kernel = "gauss", alpha_val = 0.3){
+                        Lambda_i = 0, kernel = "gauss", alpha_val = 0.3, maxk = 1000){
   ### INPUT CHECKS ###
   stopifnot("Data set should be of class 'data.frame'." = is.data.frame(data) == TRUE)
   stopifnot("Lambda_i should be of class 'numeric'." = is.numeric(Lambda_i))
@@ -58,6 +61,12 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
   stopifnot("Indices of marginal outliers should be unique." = length(unique(marg_outs)) == length(marg_outs))
   stopifnot("Indices of marginal outliers should be unique integer values from 1 up to the number of observations in the data." = sum(marg_outs %in% c(1:nrow(data))) == length(marg_outs))
   stopifnot("Kernel choice not supported - see documentation for supported kernels." = kernel %in% c("gauss", "rect", "trwt", "tria", "epan", "bisq"))
+  if (length(maxk) > 1){
+    stop("The 'maxk' parameter must be a single positive integer.")
+  }
+  if (maxk %% 1 != 0 | maxk <= 0){
+    stop("The 'maxk' parameter must be a positive integer.")
+  }
   ### END OF CHECKS ###
 
   # Filter out marginal outliers
@@ -79,7 +88,7 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
     fits[[i]] <- locfit::locfit(~.,
                                 data = data_no_marg_lvl[[i]],
                                 kern = kernel, alpha = alpha_val,
-                                maxk = 1000000, family = 'dens',
+                                maxk = maxk, family = 'dens',
                                 maxit = 1000)
   }
   # Store prediction for each class in matrix

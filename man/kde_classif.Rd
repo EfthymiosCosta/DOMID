@@ -11,7 +11,8 @@ kde_classif(
   marg_outs,
   Lambda_i = 0,
   kernel = "gauss",
-  alpha_val = 0.3
+  alpha_val = 0.3,
+  maxk = 1000
 )
 }
 \arguments{
@@ -29,6 +30,10 @@ kde_classif(
 
 \item{alpha_val}{The value of alpha that determines the kernel bandwidth. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where k = floor(n*alpha_val) and n is
 the number of observations possessing each target index level of interest. Default value is 0.3 and the value can be between 0 and 1 - see the documentation of locfit for more details.}
+
+\item{maxk}{Controls space assignment for evaluation structures for the locfit evaluation. See locfit documentation and
+Loader, C. (1999) Local Regression and Likelihood, Springer. for more details. If you get errors or warnings about `Insufficient vertex space',
+locfit's default assigment can be increased by increasing 'maxk'. Default value is 1000.}
 }
 \value{
 A list with 2 elements. The first element is a vector of length
@@ -56,5 +61,5 @@ continuous_scores <- cont_scores(dt, c(6:10))
 marginal_outs <- unique(unlist(marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]])))
 kde_classification <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 0, kernel = 'gauss', alpha_val = 0.3)
 kde_classification2 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = c(1.5, 5, 7.3, 21.1), kernel = 'epan', alpha_val = 0.5)
-kde_classification3 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 8, kernel = 'rect', alpha_val = 0.9)
+kde_classification3 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 8, kernel = 'rect', alpha_val = 0.9, maxk = 2000)
 }
