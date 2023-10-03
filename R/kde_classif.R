@@ -61,7 +61,11 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
   ### END OF CHECKS ###
 
   # Filter out marginal outliers
-  data_no_marg <- data[-marg_outs, ]
+  if (length(marg_outs) > 0){
+    data_no_marg <- data[-marg_outs, ]
+  } else {
+    data_no_marg <- data
+  }
   original_row_names <- row.names(data_no_marg)
   row.names(data_no_marg) <- c(1:nrow(data_no_marg))
   # Store observations corresponding to each level of target variable
