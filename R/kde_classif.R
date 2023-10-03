@@ -79,7 +79,7 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
     fits[[i]] <- locfit::locfit(~.,
                                 data = data_no_marg_lvl[[i]],
                                 kern = kernel, alpha = alpha_val,
-                                maxk = 1000, family = 'dens',
+                                maxk = 1000000, family = 'dens',
                                 maxit = 1000)
   }
   # Store prediction for each class in matrix
