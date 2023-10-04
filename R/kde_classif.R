@@ -1,7 +1,7 @@
 #' Perform KDE classification using locfit.
 #'
 #' @description
-#' This function uses the locfit package to perform classification of a discrete feature using a set
+#' This function performs classification of a discrete feature using a set
 #' of continuous variables by using Kernel Density Estimation (KDE). The data set should be provided
 #' together with a set of indices of marginally outlying observations, since these observations will
 #' be discarded - one can also provide the data set without any marginal outliers and simply provide
@@ -10,16 +10,18 @@
 #' the number of misclassifications for which the KDE ratio (max KDE value over all levels divided
 #' by the KDE value for the true level for each observation) exceeds Lambda_i. Setting this equal to
 #' 0 (default choice) will return results for all Lambda_i values from 1 up to 20 with a step size of 0.5.
+#' The locfit package is used when there are more than 1 predictor, otherwise the density function from
+#' the stats package is used for targeting univariate densities.
 #'
 #' @param data Data set; should be of class 'data.frame'.
 #' @param target_inx Column index for target discrete variable. This variable should be of unit length and the target variable should be of class 'factor'.
 #' @param pred_inx Column index for predictor variables. The predictor variables can only be of class 'numeric'.
 #' @param marg_outs Vector of row indices for marginal outliers in the data set. These will be discarded from the KDE classification. One can set this to be an empty vector in case they provide a data set with no marginal outliers.
 #' @param Lambda_i Vector of Lambda_i values, such that the function returns the misclassified observations for which the KDE ratio exceeds the threshold value of Lambda_i. This can be any vector of values greater than 1, the default choice being 0 which corresponds to a vector of values from 1 to 20 in step sizes of 0.5.
-#' @param kernel Kernel chosen for KDE. Default choice is 'gauss' for Gaussian kernel. Other options are 'rect', 'trwt', 'tria', 'epan' or 'bisq' for Rectangular, Triweight, Triangle, Epanechnikov and Bisquare kernels - see the documentation of locfit for more details.
-#' @param alpha_val The value of alpha that determines the kernel bandwidth. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where k = floor(n*alpha_val) and n is
+#' @param kernel Kernel chosen for KDE. Default choice is 'gauss' for Gaussian kernel. This is also the only kernel used if there is just 1 predictor and this argument is ignored. Other options are 'rect', 'trwt', 'tria', 'epan' or 'bisq' for Rectangular, Triweight, Triangle, Epanechnikov and Bisquare kernels - see the documentation of locfit for more details.
+#' @param alpha_val The value of alpha that determines the kernel bandwidth. This argument is ignored if there is only 1 predictor. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where k = floor(n*alpha_val) and n is
 #' the number of observations possessing each target index level of interest. Default value is 0.3 and the value can be between 0 and 1 - see the documentation of locfit for more details.
-#' @param maxk Controls space assignment for evaluation structures for the locfit evaluation. See locfit documentation and
+#' @param maxk Controls space assignment for evaluation structures for the locfit evaluation. This argument is ignored if there is only 1 predictor. See locfit documentation and
 #' Loader, C. (1999) Local Regression and Likelihood, Springer. for more details. If you get errors or warnings about `Insufficient vertex space',
 #' locfit's default assigment can be increased by increasing 'maxk'. Default value is 1000.
 #'
@@ -84,17 +86,33 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
   }
   # Perform KDE and store the fits
   fits <- list()
+  # Check if we are targetting a univariate distribution
+  # If so, locfit shall not be used and density is called instead
+  aux <- TRUE
+  if (length(pred_inx) == 1){
+    aux <- FALSE
+  }
   for (i in 1:length(unique(data_no_marg[, target_inx]))){
-    fits[[i]] <- locfit::locfit(~.,
-                                data = data_no_marg_lvl[[i]],
-                                kern = kernel, alpha = alpha_val,
-                                maxk = maxk, family = 'dens',
-                                maxit = 1000)
+    if (aux){
+      fits[[i]] <- locfit::locfit(~.,
+                                  data = data_no_marg_lvl[[i]],
+                                  kern = kernel, alpha = alpha_val,
+                                  maxk = maxk, family = 'dens',
+                                  maxit = 1000)
+    } else {
+      fits[[i]] <- stats::density(x = data_no_marg_lvl[[i]],
+                                  kernel = "gaussian",
+                                  n = 2^12)
+    }
   }
   # Store prediction for each class in matrix
   pred_dens_mat <- matrix(NA, nrow = nrow(data_no_marg), ncol = length(unique(data_no_marg[, target_inx])))
   for (i in 1:length(unique(data_no_marg[, target_inx]))){
-    pred_dens_mat[,i] <- sapply(1:nrow(data_no_marg), FUN = function(j) predict(fits[[i]], data_no_marg[j, pred_inx]))
+    if (aux){
+      pred_dens_mat[,i] <- sapply(1:nrow(data_no_marg), FUN = function(j) predict(fits[[i]], data_no_marg[j, pred_inx]))
+    } else {
+      pred_dens_mat[,i] <- sapply(1:nrow(data_no_marg), FUN = function(j) KDE_pred_1d(data_no_marg[j, pred_inx], data_no_marg_lvl[[i]], h = fits[[i]]$bw))
+    }
   }
   # Get classifications
   pred_dens <- sapply(1:nrow(data_no_marg), FUN = function(j) which.max(pred_dens_mat[j,]))
@@ -120,10 +138,18 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
         obs <- data_no_marg[which(row.names(data_no_marg)==dens_missed[i]), pred_inx]
         true_class <- data_no_marg[which(row.names(data_no_marg)==dens_missed[i]), target_inx]
         # Look at local densities
-        true_dens <- predict(fits[[true_class]], obs)
+        if (aux){
+          true_dens <- predict(fits[[true_class]], obs)
+        } else {
+          true_dens <- KDE_pred_1d(t = obs, xs = data_no_marg_lvl[[true_class]], h = fits[[true_class]]$bw)
+        }
         dens_preds <- c()
         for (j in 1:length(fits)){
-          dens_preds <- c(dens_preds, predict(fits[[j]], obs))
+          if (aux){
+            dens_preds <- c(dens_preds, predict(fits[[j]], obs))
+          } else {
+            dens_preds <- c(dens_preds, KDE_pred_1d(t = obs, xs = data_no_marg_lvl[[j]], h=fits[[j]]$bw))
+          }
         }
         # Look at KDE ratios
         dens_ratios <- setdiff(dens_preds, true_dens)/true_dens

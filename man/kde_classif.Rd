@@ -26,12 +26,12 @@ kde_classif(
 
 \item{Lambda_i}{Vector of Lambda_i values, such that the function returns the misclassified observations for which the KDE ratio exceeds the threshold value of Lambda_i. This can be any vector of values greater than 1, the default choice being 0 which corresponds to a vector of values from 1 to 20 in step sizes of 0.5.}
 
-\item{kernel}{Kernel chosen for KDE. Default choice is 'gauss' for Gaussian kernel. Other options are 'rect', 'trwt', 'tria', 'epan' or 'bisq' for Rectangular, Triweight, Triangle, Epanechnikov and Bisquare kernels - see the documentation of locfit for more details.}
+\item{kernel}{Kernel chosen for KDE. Default choice is 'gauss' for Gaussian kernel. This is also the only kernel used if there is just 1 predictor and this argument is ignored. Other options are 'rect', 'trwt', 'tria', 'epan' or 'bisq' for Rectangular, Triweight, Triangle, Epanechnikov and Bisquare kernels - see the documentation of locfit for more details.}
 
-\item{alpha_val}{The value of alpha that determines the kernel bandwidth. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where k = floor(n*alpha_val) and n is
+\item{alpha_val}{The value of alpha that determines the kernel bandwidth. This argument is ignored if there is only 1 predictor. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where k = floor(n*alpha_val) and n is
 the number of observations possessing each target index level of interest. Default value is 0.3 and the value can be between 0 and 1 - see the documentation of locfit for more details.}
 
-\item{maxk}{Controls space assignment for evaluation structures for the locfit evaluation. See locfit documentation and
+\item{maxk}{Controls space assignment for evaluation structures for the locfit evaluation. This argument is ignored if there is only 1 predictor. See locfit documentation and
 Loader, C. (1999) Local Regression and Likelihood, Springer. for more details. If you get errors or warnings about `Insufficient vertex space',
 locfit's default assigment can be increased by increasing 'maxk'. Default value is 1000.}
 }
@@ -44,7 +44,7 @@ Setting Lambda_i equal to its default value of 0 will consider Lambda_i to be eq
 values from 1 up to 20, with step size of 0.5.
 }
 \description{
-This function uses the locfit package to perform classification of a discrete feature using a set
+This function performs classification of a discrete feature using a set
 of continuous variables by using Kernel Density Estimation (KDE). The data set should be provided
 together with a set of indices of marginally outlying observations, since these observations will
 be discarded - one can also provide the data set without any marginal outliers and simply provide
@@ -53,6 +53,8 @@ of the levels of the target feature. The value of Lambda_i is there to account f
 the number of misclassifications for which the KDE ratio (max KDE value over all levels divided
 by the KDE value for the true level for each observation) exceeds Lambda_i. Setting this equal to
 0 (default choice) will return results for all Lambda_i values from 1 up to 20 with a step size of 0.5.
+The locfit package is used when there are more than 1 predictor, otherwise the density function from
+the stats package is used for targeting univariate densities.
 }
 \examples{
 dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = 1, assoc_vars = c(1, 2), assoc_type = 'linear', seed_num = 1)
