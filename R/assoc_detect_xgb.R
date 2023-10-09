@@ -139,7 +139,7 @@ assoc_detect_xgb <- function(data, K = 5, pred_inx, target_inx,
                                                    "Min_Contrib" = 0,
                                                    "SD_Contrib" = 0))
     }
-    # Save contributions, weights and misclassification results
+    # Save contributions, weights and misclassification results & predictions for misclassifications
     contribs_list[[length(contribs_list)+1]] <- contribs_df
     misclassifs <- n - sum(xgboostpredictions == data[, target_inx[t]])
     misclassifs_df <- rbind(misclassifs_df,
@@ -147,7 +147,10 @@ assoc_detect_xgb <- function(data, K = 5, pred_inx, target_inx,
                                        'Misclassifications' = misclassifs,
                                        'Misclassification Rate' = misclassifs/n))
     weights_list[[length(weights_list)+1]] <- weights_vec
+    inc_preds_mat[[length(inc_preds_mat)+1]] <- preds_mat[which(xgboostpredictions != data[, target_inx[t]]),]
+    inc_preds[[length(inc_preds)+1]] <- which(xgboostpredictions != data[, target_inx[t]])
   }
   return(list("Contributions" = contribs_list, "Misclassifications" = misclassifs_df,
-              "Weights" = weights_list))
+              "Weights" = weights_list, "Incorrect_Predictions_Matrix" = inc_preds_mat,
+              "Incorrect_Predictions" = inc_preds))
 }
