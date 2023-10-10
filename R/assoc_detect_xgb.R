@@ -52,6 +52,8 @@ assoc_detect_xgb <- function(data, K = 5, pred_inx, target_inx,
 
   n <- nrow(data)
   contribs_list <- list()
+  inc_preds_mat <- list()
+  inc_preds <- list()
   weights_list <- list()
   misclassifs_df <- data.frame('Target index' = numeric(),
                                'Misclassifications' = numeric(),
