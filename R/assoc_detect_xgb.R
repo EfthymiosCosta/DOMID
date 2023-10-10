@@ -55,6 +55,7 @@ assoc_detect_xgb <- function(data, K = 5, pred_inx, target_inx,
   inc_preds_mat <- list()
   inc_preds <- list()
   weights_list <- list()
+  pred_lbls <- list()
   misclassifs_df <- data.frame('Target index' = numeric(),
                                'Misclassifications' = numeric(),
                                'Misclassification Rate' = numeric(),
@@ -151,8 +152,10 @@ assoc_detect_xgb <- function(data, K = 5, pred_inx, target_inx,
     weights_list[[length(weights_list)+1]] <- weights_vec
     inc_preds_mat[[length(inc_preds_mat)+1]] <- preds_mat[which(xgboostpredictions != data[, target_inx[t]]),]
     inc_preds[[length(inc_preds)+1]] <- which(xgboostpredictions != data[, target_inx[t]])
+    pred_lbls[[length(pred_lbls)+1]] <- xgboostpredictions
   }
   return(list("Contributions" = contribs_list, "Misclassifications" = misclassifs_df,
               "Weights" = weights_list, "Incorrect_Predictions_Matrix" = inc_preds_mat,
-              "Incorrect_Predictions" = inc_preds))
+              "Incorrect_Predictions" = inc_preds,
+              "Predicted_Labels" = pred_lbls))
 }
