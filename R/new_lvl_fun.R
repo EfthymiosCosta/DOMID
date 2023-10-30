@@ -11,7 +11,7 @@ new_lvl_fun <- function(new_lvl, value, quantiles_vec){
   if (length(new_lvl)>1){
     new_lvl <- sample(new_lvl, 1)
   }
-  if (new_lvl > 1 & (value-0.15) <= quantiles_vec[new_lvl]){
+  if (new_lvl > 1 & (value-0.25) <= quantiles_vec[new_lvl]){
     aux <- sample(c(0,1), 1)
     if (aux){
       new_lvl <- new_lvl-1
