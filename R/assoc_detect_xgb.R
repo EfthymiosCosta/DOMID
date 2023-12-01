@@ -49,7 +49,6 @@ assoc_detect_xgb <- function(data, K = 5, pred_inx, target_inx,
   stopifnot("Indices of marginal outliers should be unique." = length(unique(marg_outs)) == length(marg_outs))
   stopifnot("Indices of marginal outliers should be unique integer values from 1 up to the number of observations in the data." = sum(marg_outs %in% c(1:nrow(data))) == length(marg_outs))
   ### END OF CHECKS ###
-
   n <- nrow(data)
   contribs_list <- list()
   inc_preds_mat <- list()
