@@ -4,7 +4,7 @@ The `DOMID` (Detecting Outliers in MIxed-type Data) `R` package includes functio
 - Generating artificial data sets of mixed-type data, including some marginal outliers in either the discrete or the continuous domain (or both), as well as joint outliers.
 - Calculating scores of outlyingness for both the continuous and the discrete features of a data set.
 - Detecting the marginal outliers in a mixed data set, when given scores of outlyingness for discrete & continuous features.
-- Finding associations among discrete variables and sets of continuous features.
+- Finding associations among discrete variables and sets of continuous features (equivalent to context identification in contextual outlier detection with continuous contextual and discrete behavioural features).
 - Detecting joint outliers for a given association among a discrete and a set of continuous variables.
 
 A detailed description of the methods included in the package can be found in [Costa, E., & Papatsouma, I. (2023). Outlier detection for mixed-type data: A novel approach.](https://arxiv.org/abs/2308.09562)
