@@ -27,7 +27,7 @@ cont_scores(
 
 \item{max_depth}{Maximum depth of binary trees used in Extended Isolation Forest algorithm, default choice is 100.}
 
-\item{seed_num}{Seed number for reproducibility, default choice is 0.}
+\item{seed_num}{Seed number for reproducibility, default choice is 1.}
 }
 \value{
 A data frame with 2 columns, the first corresponding to the observations and the second corresponding to their continuous scores of outlyingness.

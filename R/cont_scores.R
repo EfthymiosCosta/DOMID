@@ -10,7 +10,7 @@
 #' @param ntrees Number of binary trees used in Extended Isolation Forest algorithm, default choice is 500.
 #' @param ndim Number of dimensions on which the splits are made in Extended Isolation Forest algorithm, default choice of 0 corresponds to the number of continuous variables in the data. (Note: Setting ndim = 1 yields the original Isolation Forest algorithm.)
 #' @param max_depth Maximum depth of binary trees used in Extended Isolation Forest algorithm, default choice is 100.
-#' @param seed_num Seed number for reproducibility, default choice is 0.
+#' @param seed_num Seed number for reproducibility, default choice is 1.
 #'
 #' @return A data frame with 2 columns, the first corresponding to the observations and the second corresponding to their continuous scores of outlyingness.
 #' @export

@@ -4,7 +4,7 @@
 #' @param marginals Vector of row indices for marginal outliers detected. These are excluded from the analysis.
 #' @param target_inx Index of target discrete variable, should be of class 'factor'.
 #' @param pred_inx Indices of predictor continuous variables, should be of class 'numeric'.
-#' @param delta Proportion of nearest neighbours considered. Should be a number in the range (0, 0.5].
+#' @param delta Proportion of nearest neighbours considered. Should be a number in the range (0, 0.5], default value is 0.50.
 #' @param mink_order Order of Minkowski distance. The default value of 1 returns the L1 norm (Manhattan distance).
 #' @param alpha1 Significance level of Kruskal Wallis H test used; default value is 1e-3.
 #' @param alpha2 Significance level for the chi-square goodness of fit test used for each class; default value is 1e-1.
@@ -25,7 +25,7 @@
 #' marginals <- unique(unlist(marginals))
 #' DOMID::assoc_detect(data = dt, marginals = marginals, target_inx = 1, pred_inx = c(6:15), delta = 0.10)
 #'
-assoc_detect <- function(data, marginals, target_inx, pred_inx, delta, mink_order = 1, alpha1 = 1e-3, alpha2 = 1e-1){
+assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mink_order = 1, alpha1 = 1e-3, alpha2 = 1e-1){
   ### INPUT CHECKS ###
   if (!is.data.frame(data)){
     stop("Data set should be of class 'data.frame'.")
@@ -249,6 +249,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta, mink_orde
       return(association_subset)
     } else {
       cat('No association found between discrete variable', target_inx, 'and continuous variables.\n')
+      return(NA)
     }
   }
 }

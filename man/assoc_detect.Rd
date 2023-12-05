@@ -9,7 +9,7 @@ assoc_detect(
   marginals,
   target_inx,
   pred_inx,
-  delta,
+  delta = 0.5,
   mink_order = 1,
   alpha1 = 0.001,
   alpha2 = 0.1
@@ -24,7 +24,7 @@ assoc_detect(
 
 \item{pred_inx}{Indices of predictor continuous variables, should be of class 'numeric'.}
 
-\item{delta}{Proportion of nearest neighbours considered. Should be a number in the range (0, 0.5].}
+\item{delta}{Proportion of nearest neighbours considered. Should be a number in the range (0, 0.5], default value is 0.50.}
 
 \item{mink_order}{Order of Minkowski distance. The default value of 1 returns the L1 norm (Manhattan distance).}
 
