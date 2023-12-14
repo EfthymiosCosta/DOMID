@@ -1,8 +1,7 @@
 #' Discrete scores of outlyingness
 #'
 #' @description
-#' Function used to calculate the discrete scores of outlyingness. The method is an extension of the
-#' ODMAD algorithm of Koufakou & Georgiopoulos (2010).
+#' Function used to calculate the discrete scores of outlyingness.
 #' @param data Data frame including discrete variables on which outlier detection will be implemented. Should be of class 'data.frame'.
 #' @param disc_cols Column indices for discrete variables, these columns should be of factor class.
 #' @param alpha Significance level for the simultaneous Multinomial confidence intervals constructed, determining what the

@@ -1,16 +1,10 @@
 citHeader("To cite DOMID in publications use:")
 
 citEntry(
-  entry    = "Article",
-  title    = ,
-  author   = ,
-  journal  = ,
-  year     = ,
-  volume   = ,
-  number   = ,
-  pages    = ,
-  url      = ,
-  textVersion = paste(
-
-  )
+  entry    = "misc",
+  title    = "Outlier detection for mixed-type data: A novel approach",
+  author   = "Efthymios Costa and Ioanna Papatsouma",
+  journal  = "arXiv preprint",
+  year     = "2023",
+  url      = "https://arxiv.org/abs/2308.09562"
 )

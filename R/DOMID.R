@@ -45,8 +45,10 @@
 #' threshold Lambda_i. Set this to the maximum value of 39 if you don't want such a restriction
 #' (see documentation of consec_angles function).Argument is ignored if method is not "consec_angles".
 #'
-#' @return A list with 4 elements. The first 3 elements are the Discrete, Continuous and Combined marginal outliers.
+#' @return A list with 8 elements. The first 3 elements are the Discrete, Continuous and Combined marginal outliers.
 #' The 4th element is a vector with the row indices of the joint outliers (if any exist).
+#' Then, the discrete scores, the contributions matrix, the continuous scores
+#' and the value of MAXLEN are the last 4 elements.
 #' @export
 #'
 #' @examples
@@ -98,5 +100,9 @@ DOMID <- function(data, disc_cols, cont_cols, alpha = 0.01,
     names(outliers_detected)[length(outliers_detected)] <- "Joint"
   }
   cat('Outliers detected.\n')
+  outliers_detected$DiscreteScores <- discrete_scores[[2]]
+  outliers_detected$Contributions <- discrete_scores[[3]]
+  outliers_detected$ContinuousScores <- continuous_scores
+  outliers_detected$MAXLEN <- discrete_scores[[1]]
   return(outliers_detected)
 }

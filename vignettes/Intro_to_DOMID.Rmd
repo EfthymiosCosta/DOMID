@@ -225,6 +225,7 @@ angle <- elbow_angle(vec = kde_classifications[[1]],
                      range = seq(1, 20, by = .5))
 print(angle)
 ```
+
 Now, we are ready to detect the joint outliers in our data set. The function `joint_outs` can detect the joint outliers for given associations between discrete and continuous features. The parameter `assoc_target` takes as input a vector of target discrete variables, which have been found to be associated with sets of continuous variables. Then, `assoc_vars` will be a list including the corresponding vectors of the continuous features associated with each target discrete variable that was earlier defined in `assoc_target`. The `method` argument can take 3 levels; `"consec_angles"`, `"conservative"` or `"bin"`. The first option will choose a suitable value for the threshold parameter $\Lambda_i^*$ using the method of consecutive angles, as described earlier. The option `"conservative"` sets by default $\Lambda^*_i = 3$, which is a rather conservative choice that is found to perform well in some cases and finally `method = "bin"` refers to the case of a binary target variable, where $\Lambda^*_i = 2$ is chosen instead, due to poor performance that has been empirically observed for higher threshold values. The parameters `drop_tol` and `range_tol` can also be specified by the user. The `joint_outs` function will essentially make use of `kde_classif` with the default hyperparameter choices for `kernel` and `alpha_val`. If `method` is set equal to `"consec_angles"`, the parameter `Lambda_i` will also be set to its default of 0, otherwise for `method = "conservative"` or for `method = "bin"`, `Lambda_i` will be set equal to 3 or 2, respectively. Them `drop_tol` and `range_tol` can be specified by the user. The output of `kde_classif` will be returned if `method = "conservative"` or if `method = "bin"`, while for `method = "consec_angles"`, the `consec_angles` function will be used to determine what a suitable $\Lambda^*_i$ value should be and the output corresponding to this value will be given to the user. However, if the user wishes to select their preferred `method` for each association according to the value of the elbow angle, this process needs to be done manually and the `elbow_angle` function should be used as well. In order to wrap things up, we finally detect the joint outliers based on the associations we found between the first and the second discrete features with the first 2 continuous variables. The results reveal that all joint outliers were detected, alongside a very small number of inliers which were falsely flagged to be joint outliers.
 
 ```{r joint_outs}
@@ -239,9 +240,9 @@ print(length(joint_outliers))
 table(dt[joint_outliers, 11])
 ```
 
-## A wrapper function for detecting outleirs in mixed-type data - `DOMID`
+## A wrapper function for detecting outliers in mixed-type data - `DOMID`
 
-The `DOMID` function serves as a wrapper function for all the functions presented above. It returns a list that includes the row indices for marginal outliers as its first 3 elements (making the distinction between discrete, continuous and combined marginal outliers) and a vector of row indices for the joint outliers (assuming an association has been found). We test this on our data frame but we recommend the use of the functions above for a more detailed and thorough analysis. We also check whether the output is the same as the one we got earlier.
+The `DOMID` function serves as a wrapper function for all the functions presented above. It returns a list that includes the row indices for marginal outliers as its first 3 elements (making the distinction between discrete, continuous and combined marginal outliers) and a vector of row indices for the joint outliers (assuming an association has been found). It further returns the discrete and continuous scores for the observations, the matrix of contributions and finally the value of `MAXLEN` used for the calculation of discrete scores. We test this on our data frame but we recommend the use of the functions above for a more detailed and thorough analysis. We also check whether the output is the same as the one we got earlier.
 
 ```{r DOMID_test}
 outliers_detected <- DOMID(data = dt, disc_cols = c(1:5), cont_cols = c(6:10),
@@ -251,8 +252,8 @@ outliers_detected <- DOMID(data = dt, disc_cols = c(1:5), cont_cols = c(6:10),
                            mink_order = 1, alpha1 = 1e-3, alpha2 = 1e-2,
                            method = "consec_angles", drop_tol = 3,
                            range_tol = 21)
-all(c(unique(unlist(marginal_outliers)), joint_outliers) %in% unique(unlist(outliers_detected)))
-all(unique(unlist(outliers_detected)) %in% c(unique(unlist(marginal_outliers)), joint_outliers))
+all(c(unique(unlist(marginal_outliers)), joint_outliers) %in% unique(unlist(outliers_detected[1:4])))
+all(unique(unlist(outliers_detected[1:4])) %in% c(unique(unlist(marginal_outliers)), joint_outliers))
 ```
 
 ## Summary

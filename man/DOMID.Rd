@@ -2,7 +2,7 @@
 % Please edit documentation in R/DOMID.R
 \name{DOMID}
 \alias{DOMID}
-\title{DOMID: Detecting outliers in mixed-type datasets (marginal & joint)}
+\title{DOMID: Detecting Outliers in MIxed-type Data (marginal & joint)}
 \usage{
 DOMID(
   data,
@@ -91,11 +91,13 @@ threshold Lambda_i. Set this to the maximum value of 39 if you don't want such a
 (see documentation of consec_angles function).Argument is ignored if method is not "consec_angles".}
 }
 \value{
-A list with 4 elements. The first 3 elements are the Discrete, Continuous and Combined marginal outliers.
+A list with 8 elements. The first 3 elements are the Discrete, Continuous and Combined marginal outliers.
 The 4th element is a vector with the row indices of the joint outliers (if any exist).
+Then, the discrete scores, the contributions matrix, the continuous scores
+and the value of MAXLEN are the last 4 elements.
 }
 \description{
-DOMID: Detecting outliers in mixed-type datasets (marginal & joint)
+DOMID: Detecting Outliers in MIxed-type Data (marginal & joint)
 }
 \examples{
 dt <- DOMID::gen_marg_joint_data(n_obs = 500, n_disc = 2, n_cont = 3, n_lvls = 3,

@@ -23,8 +23,7 @@ Otherwise, MAXLEN can take any value from 1 up to the total number of discrete v
 A list with 3 elements, the first being MAXLEN, the 2nd being the discrete scores of outlyingness and the 3rd being the matrix of contributions of each discrete variable to the discrete score of each observation.
 }
 \description{
-Function used to calculate the discrete scores of outlyingness. The method is an extension of the
-ODMAD algorithm of Koufakou & Georgiopoulos (2010).
+Function used to calculate the discrete scores of outlyingness.
 }
 \examples{
 dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
