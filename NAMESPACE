@@ -2,7 +2,6 @@
 
 export(DOMID)
 export(assoc_detect)
-export(assoc_detect_xgb)
 export(consec_angles)
 export(cont_scores)
 export(disc_scores)
