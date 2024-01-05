@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Introduction to the DOMID package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to the DOMID package</h1>
+
+
+
+<div id="domid-package---overview" class="section level2">
+<h2><code>DOMID</code> package - Overview</h2>
+<p>The <code>DOMID</code> (Detecting Outliers in MIxed-type Data) R
+package includes functions that can be used for detecting outliers in
+data sets consisting of mixed-type data (i.e. both continuous and
+discrete variables). Some of the capabilities of the package
+include:</p>
+<ul>
+<li>Generating artificial data sets of mixed-type data, including some
+marginal outliers in either the discrete or the continuous domain (or
+both), as well as joint outliers.</li>
+<li>Calculating scores of outlyingness for both the continuous and the
+discrete features of a data set.</li>
+<li>Detecting the marginal outliers in a mixed data set, when given
+scores of outlyingness for discrete &amp; continuous features.</li>
+<li>Finding associations among discrete variables and sets of continuous
+features.</li>
+<li>Detecting joint outliers for a given association among a discrete
+and a set of continuous variables.</li>
+</ul>
+<p>Below, we present some of the functions included in
+<code>DOMID</code>, so that the user can familiarise themselves with the
+package.</p>
+</div>
+<div id="artificial-data-set-generation---gen_marg_joint_data" class="section level2">
+<h2>Artificial data set generation -
+<code>gen_marg_joint_data</code></h2>
+<p>Suppose that we are interested in generating an artificial data set
+consisting of both discrete and continuous variables. We want this data
+set to include some outlying observations in both the discrete and the
+continuous domains (i.e. marginal outliers), as well as a few joint
+outliers. More precisely, we generate an artificial data set with 1000
+observations, 5 discrete and 5 continuous variables. We set the second
+discrete variable to have 4 levels and the rest to have 3 discrete
+levels instead. The proportion of outliers in the data set is 20%, out
+of which 80% are joint outliers (thus the remaining 20% of outliers will
+be marginal outliers).</p>
+<p>In order to define joint outliers, we need to impose at least one
+association among a discrete and a set of continuous variables. We set
+the first 2 discrete variables to be associated with the first 2
+continuous variables each. The association type is set to
+<code>quotient</code> for both existing associations. As a result,
+projecting the data set in the space spanned by the first 2 continuous
+variables and colouring each observation according to the level of the
+first or the second discrete variable should reveal a pattern. We
+generate this data set using a seed number of 1 for reproducibility,
+store it as <code>dt</code> and we then display its structure.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(DOMID)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">gen_marg_joint_data</span>(<span class="at">n_obs =</span> <span class="dv">1000</span>, <span class="at">n_disc =</span> <span class="dv">5</span>, <span class="at">n_cont =</span> <span class="dv">5</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>                          <span class="at">n_lvls =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>), <span class="at">p_outs =</span> <span class="fl">0.20</span>, <span class="at">jp_outs =</span> <span class="fl">0.80</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>                          <span class="at">assoc_target =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="at">assoc_vars =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)),</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>                          <span class="at">assoc_type =</span> <span class="st">&#39;quotient&#39;</span>, <span class="at">seed_num =</span> <span class="dv">1</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; Marginal outliers generated.</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; Joint outliers generated.</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; Data frame generated.</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">str</span>(dt)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; &#39;data.frame&#39;:    1000 obs. of  11 variables:</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;  $ V1 : Factor w/ 4 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;: 3 3 2 1 2 2 3 1 1 1 ...</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt;  $ V2 : Factor w/ 5 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,..: 4 2 1 1 3 2 1 1 2 1 ...</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt;  $ V3 : Factor w/ 4 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;: 3 1 1 2 3 1 2 2 3 2 ...</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt;  $ V4 : Factor w/ 4 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;: 3 1 2 2 2 3 2 2 1 2 ...</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt;  $ V5 : Factor w/ 4 levels &quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;: 2 1 1 3 1 3 2 2 1 3 ...</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt;  $ V6 : num  3.16458 1.14932 0.2301 0.1009 0.00752 ...</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt;  $ V7 : num  0.5 0.283 0.604 0.992 2.69 ...</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt;  $ V8 : num  -0.678 2.361 -1.143 -0.106 -0.968 ...</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt;  $ V9 : num  2.465 -0.5 -1.036 -0.724 -0.294 ...</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt;  $ V10: num  0.187 -1.027 -1.145 2.166 -1.094 ...</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt;  $ V11: num  0 3 3 0 3 0 3 0 0 0 ...</span></span></code></pre></div>
+<p>As we can see, the data frame that has been generated includes 1000
+observations. The first 5 variables are discrete with the number of
+levels we indicated plus an additional level; this level is introduced
+due to the generation of marginal outliers in the data set. In this
+case, the outliers that were generated in the discrete space will take
+levels that appear in very low frequencies and which are therefore
+indicative of an anomalous behaviour. Then, we have 5 continuous
+variables and finally an additional variable which is generated
+automatically by the function and which is a label of outlyingness. More
+precisely, a value of 0 indicates that the observation is not an
+outlier, a value of 1 indicates that the observation is a single
+marginal outlier (i.e. an outlier in either just the discrete or just
+the continuous domain), a value of 2 refers to the observation being a
+combined marginal outlier (i.e. an observation in both the discrete and
+the continuous spaces) and finally a value of 3 is assigned to joint
+outliers. Finally, in order to investigate whether the associations we
+imposed are indeed valid, we plot the first two continuous variables
+with points coloured according to the first and the second discrete
+variable levels. We make sure to discard any marginal outliers, so that
+the associations can be observed more easily.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">plot</span>(dt[<span class="fu">which</span>(dt<span class="sc">$</span>V11 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">3</span>)), <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">7</span>)],</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>     <span class="at">col =</span> dt[<span class="fu">which</span>(dt<span class="sc">$</span>V11 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">3</span>)), <span class="dv">1</span>],</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&#39;Continuous Variable 1&#39;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&#39;Continuous Variable 2&#39;</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&#39;topright&#39;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&#39;Level 1&#39;</span>, <span class="st">&#39;Level 2&#39;</span>, <span class="st">&#39;Level 3&#39;</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&#39;Discrete Variable 1&#39;</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.9</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">plot</span>(dt[<span class="fu">which</span>(dt<span class="sc">$</span>V11 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">3</span>)), <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">7</span>)],</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>     <span class="at">col =</span> dt[<span class="fu">which</span>(dt<span class="sc">$</span>V11 <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">3</span>)), <span class="dv">2</span>],</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&#39;Continuous Variable 1&#39;</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&#39;Continuous Variable 2&#39;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&#39;topright&#39;</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&#39;Level 1&#39;</span>, <span class="st">&#39;Level 2&#39;</span>, <span class="st">&#39;Level 3&#39;</span>, <span class="st">&#39;Level 4&#39;</span>),</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&#39;Discrete Variable 2&#39;</span>,</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.9</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Indeed, we see that the associations have been generated correctly.
+As you may observe, there exist some points which do not seem to agree
+with with the relationships that we imposed; these observations are the
+joint outliers that were generated.</p>
+</div>
+<div id="scores-of-outlyingness---disc_scores-cont_scores" class="section level2">
+<h2>Scores of outlyingness - <code>disc_scores</code> &amp;
+<code>cont_scores</code></h2>
+<p>In order to be able to detect marginal outliers (i.e. outliers in
+either the discrete or the continuous space), we need to compute scores
+of outlyingness for the discrete and the continuous features of each
+observation. The function <code>disc_scores</code> takes as input a data
+set and the indices of the columns corresponding to the discrete
+variables. Notice that the discrete features must be of class
+<code>factor</code>; this is something that we do not need to worry
+about, since the function <code>gen_marg_joint_data</code> returns
+discrete variable columns of the aforementioned class. There is an
+additional parameter, <code>alpha</code>, which is the significance
+level of the simultaneous confidence intervals for the Multinomial
+proportions. The confidence intervals determine what the frequency
+thresholds should be for itemsets of different length, with greater
+<code>alpha</code> values leading to a more conservative algorithm that
+also penalises less infrequent itemsets. We proceed with the default
+value of 0.01 to construct 99% confidence intervals but any positive
+real value at most equal to 0.20 can be given. The final parameter is
+<code>MAXLEN</code>, which is the itemset sequence length to be
+considered for discrete scores. The default value is 0 which calculates
+MAXLEN according to a criterion on the sparsity caused by the total
+combinations that can be encountered as sequences of greater length are
+taken into account. Otherwise, MAXLEN can take any value from 1 up to
+the total number of discrete variables included in the data set. We
+proceed with the default value here again. The output of
+<code>disc_scores</code> is a list of 3 elements. The first element is
+the parameter <code>MAXLEN</code> that is used for computing discrete
+scores. The second element in the list is a data frame with the discrete
+scores of outlyingness. Finally, the last element in the output list is
+a matrix of dimensions <code>nrow(data) x length(disc_cols)</code>,
+including the contribution of each discrete feature to the discrete
+score of outlyingness of each observation.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>discrete_scores <span class="ot">&lt;-</span> <span class="fu">disc_scores</span>(<span class="at">data =</span> dt, <span class="at">disc_cols =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">alpha =</span> <span class="fl">0.01</span>, <span class="at">MAXLEN =</span> <span class="dv">0</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; Power set object created. </span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; Pre-processing done. </span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; Sequences list created. </span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; List with counts and frequencies created successfully. </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; Outlyingness scores for discrete variables calculated.</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co"># MAXLEN</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>discrete_scores[[<span class="dv">1</span>]]</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># Discrete scores for observations 61-70</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>discrete_scores[[<span class="dv">2</span>]][<span class="fu">c</span>(<span class="dv">61</span><span class="sc">:</span><span class="dv">70</span>), ]</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;    Observation Score</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 61          61 0.000</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 62          62 0.000</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 63          63 0.000</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 64          64 0.000</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; 65          65 0.000</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; 66          66 0.000</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; 67          67 0.125</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt; 68          68 0.000</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; 69          69 0.000</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; 70          70 0.000</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co"># Contributions of discrete features for observations 61-70</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>discrete_scores[[<span class="dv">3</span>]][<span class="fu">c</span>(<span class="dv">61</span><span class="sc">:</span><span class="dv">70</span>), ]</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt;       V1 V2 V3 V4 V5</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; 61 0.000  0  0  0  0</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; 62 0.000  0  0  0  0</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; 63 0.000  0  0  0  0</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; 64 0.000  0  0  0  0</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; 65 0.000  0  0  0  0</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; 66 0.000  0  0  0  0</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; 67 0.125  0  0  0  0</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; 68 0.000  0  0  0  0</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; 69 0.000  0  0  0  0</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; 70 0.000  0  0  0  0</span></span></code></pre></div>
+<p>Computing the continuous scores of outlyingness is easily done using
+the <code>cont_scores</code> function. The function makes use of the
+Extended Isolation Forest algorithm from the <code>isotree</code>
+package. The default hyperparameter values for the Extended Isolation
+Forest algorithm are <code>sample_size = 256</code>,
+<code>ntrees = 500</code>, <code>max_depth = 100</code> and finally
+<code>ndim = 0</code>, corresponding to
+<code>ndim = length(cont_cols)</code>. The output is a data frame with
+the continuous score for each observation, just like the 2nd element of
+the list that the <code>disc_scores</code> function returns.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>continuous_scores <span class="ot">&lt;-</span> <span class="fu">cont_scores</span>(<span class="at">data =</span> dt, <span class="at">cont_cols =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>), <span class="at">sample_size =</span> <span class="dv">256</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>                                 <span class="at">ntrees =</span> <span class="dv">500</span>, <span class="at">ndim =</span> <span class="dv">0</span>, <span class="at">max_depth =</span> <span class="dv">100</span>, <span class="at">seed_num =</span> <span class="dv">1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; Outlyingness scores for continuous variables calculated.</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Continuous scores for first 10 observations</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>continuous_scores[<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>), ]</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt;    Observation     Score</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; 1            1 0.4375902</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; 2            2 0.3847178</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; 3            3 0.3438153</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; 4            4 0.3532435</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; 5            5 0.3597533</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; 6            6 0.3637658</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; 7            7 0.3400688</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; 8            8 0.3241687</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 9            9 0.3544401</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 10          10 0.3475090</span></span></code></pre></div>
+<p>We can finally generate a “score profile” plot to see if the scores
+computed agree with whether each observation is an outlier or not.
+Indeed, we can see that marginal outliers appear to have higher discrete
+and continuous scores than inliers (i.e. non-outliers) and joint
+outliers, which are by definition not expected to have large scores of
+outlyingness.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Add everything in a data frame</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>score_profile_dt <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="st">&#39;Type&#39;</span> <span class="ot">=</span> <span class="fu">as.factor</span>(dt[, <span class="dv">11</span>]),</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>                               <span class="st">&#39;Discrete_Score&#39;</span> <span class="ot">=</span> discrete_scores[[<span class="dv">2</span>]][, <span class="dv">2</span>],</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>                               <span class="st">&#39;Continuous_Score&#39;</span> <span class="ot">=</span> continuous_scores[, <span class="dv">2</span>])</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Score profile plot</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>score_profile_dt <span class="ot">&lt;-</span> score_profile_dt[<span class="fu">order</span>(score_profile_dt<span class="sc">$</span>Type), ]</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar=</span><span class="fu">c</span>(<span class="fl">5.1</span>, <span class="fl">4.1</span>, <span class="fl">4.1</span>, <span class="fl">8.1</span>), <span class="at">xpd=</span><span class="cn">TRUE</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="fu">plot</span>(score_profile_dt[, <span class="fu">c</span>(<span class="dv">2</span> ,<span class="dv">3</span>)],</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>     <span class="at">col =</span> score_profile_dt[, <span class="dv">1</span>],</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&#39;Discrete Score&#39;</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&#39;Continuous Score&#39;</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Score profile plot for generated data set&quot;</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>       <span class="at">inset=</span><span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.325</span>,<span class="dv">0</span>),</span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">c</span>(<span class="st">&quot;Inlier&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>                <span class="st">&quot;Single Marginal&quot;</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>                <span class="st">&quot;Combined Marginal&quot;</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>                <span class="st">&quot;Joint&quot;</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>),</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>       <span class="at">pch=</span><span class="dv">16</span>,</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>       <span class="at">title=</span><span class="st">&quot;Outlier Type&quot;</span>,</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.85</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="detecting-marginal-outliers---marg_outs_scores-marg_outs" class="section level2">
+<h2>Detecting marginal outliers - <code>marg_outs_scores</code> &amp;
+<code>marg_outs</code></h2>
+<p>In order to detect the marginal outliers in a data frame, we need to
+make use of the discrete and the continuous scores of outlyingness. The
+function <code>marg_outs_scores</code> uses the scores (both discrete
+&amp; continuous), as well as the matrix of contributions and detects
+the observations with scores higher than the majority of data points,
+which are therefore much more likely outlying in either space. There are
+3 additional parameters; <code>alpha</code>, <code>rho</code> and
+<code>epsilon</code>; the first one was already explained in
+<code>disc_scores</code> while the last 2 represent the maximum
+proportion of outliers that we believe exist in the data set and the
+additional proportion of outliers that we are willing to tolerate,
+respectively. It holds that <span class="math inline">\(\rho \in [0,
+0.5]\)</span>, <span class="math inline">\(\epsilon \in [0,
+0.25)\)</span> with <span class="math inline">\(\rho &gt;
+\epsilon\)</span> and <span class="math inline">\(\rho + \epsilon \leq
+0.5\)</span>, as <span class="math inline">\(\epsilon\)</span> is just
+an additional “error” that we allow the algorithm to make. If the true
+proportion of outliers is equal to <span class="math inline">\(\rho +
+\epsilon\)</span>, then this restricts the algorithm a lot as it does
+not give it the flexibility to allow for a few inliers to be regarded as
+outliers, thus we recommend setting this sum to be equal to something
+reasonable. For the simulations below we set it to 0.22 by specifying
+<code>rho = 0.20</code> and <code>epsilon = 0.02</code> (also the
+default values). We also set the <code>alpha</code> value to its default
+of 0.01 to ensure the algorithm is not very conservative with the
+discrete scores. The output is a list consisting of 3 vectors, the first
+2 corresponding to the row indices of outlying observations in just the
+discrete or just the continuous space and the 3rd corresponding to the
+combined marginal outliers (i.e. observations outlying in both domains).
+We use this function on our data frame to see if the observations
+flagged as marginal outliers are indeed so.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>marginal_outliers <span class="ot">&lt;-</span> <span class="fu">marg_outs_scores</span>(<span class="at">data =</span> dt,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                                      <span class="at">disc_cols =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>                                      <span class="at">outscorediscdf =</span> discrete_scores[[<span class="dv">2</span>]],</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>                                      <span class="at">outscorecontdf =</span> continuous_scores,</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>                                      <span class="at">outscorediscdfcells =</span> discrete_scores[[<span class="dv">3</span>]],</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>                                      <span class="at">alpha =</span> <span class="fl">0.01</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>                                      <span class="at">rho =</span> <span class="fl">0.20</span>, <span class="at">epsilon =</span> <span class="fl">0.02</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; Marginal outliers detected.</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="fu">table</span>(dt[<span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)), <span class="dv">11</span>])</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;  1  2 </span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 23 16</span></span></code></pre></div>
+<p>Indeed, our data set included 23 single marginal and 16 combined
+marginal outliers, meaning that the function has managed to detect
+these, while not erroneously flagging any inliers or joint outliers. An
+alternative option is to use the <code>marg_outs</code> function
+instead. This function only takes as input variables the data frame, the
+indices of the discrete variable columns and the indices of the
+continuous variable columns. It returns the same output as
+<code>marg_outs_scores</code>. In fact, <code>marg_outs</code> uses
+<code>marg_outs_scores</code>; their difference is that the former does
+not require inputting discrete or continuous scores of outlyingness, as
+these are calculated automatically using <code>disc_scores</code> and
+<code>cont_scores</code>. Using <code>marg_outs_scores</code> offers
+additional flexibility; for example, the user can set the hyperparameter
+values for the Extended Isolation Forest algorithm used in
+<code>cont_scores</code>, whereas <code>marg_outs</code> will use the
+aforementioned function with its default hyperparameter values (except
+for <code>alpha</code>, <code>MAXLEN</code>, <code>rho</code> and
+<code>epsilon</code> which can be specified by the user). In this case,
+all hyperparameters involved in the calculation of the discrete and the
+continuous scores were set equal to their default values, so we expect
+<code>marg_outs</code> to return identical results to
+<code>marg_outs_scores</code>, as we show below.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>marginal_outliers_2 <span class="ot">&lt;-</span> <span class="fu">marg_outs</span>(<span class="at">data =</span> dt,</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>                                 <span class="at">disc_cols =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                                 <span class="at">cont_cols =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                                 <span class="at">alpha =</span> <span class="fl">0.01</span>, <span class="at">MAXLEN =</span> <span class="dv">0</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                                 <span class="at">rho =</span> <span class="fl">0.20</span>, <span class="at">epsilon =</span> <span class="fl">0.02</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; Power set object created. </span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; Pre-processing done. </span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; Sequences list created. </span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; List with counts and frequencies created successfully. </span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; Outlyingness scores for discrete variables calculated.</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; Outlyingness scores for continuous variables calculated.</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; Marginal outliers detected.</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)) <span class="sc">==</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers_2)))</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div id="detecting-associations-between-variables---assoc_detect" class="section level2">
+<h2>Detecting associations between variables -
+<code>assoc_detect</code></h2>
+<p>Once we have detected the marginal outliers in our data set, we can
+look for joint outliers as well. These are defined as “innocent-looking”
+observations with their discrete features taking typical levels, while
+their continuous values are not too far away from the rest of the data
+points. As a result, their discrete and continuous scores are low enough
+and they cannot be detected together with the marginal outliers.
+However, these observations are outlying in the sense that they do not
+follow an existing “pattern” or “association” between features of
+distinct types. In practice, these associations will typically be
+defined between a discrete and a set of continuous features and they
+will (in many cases) be unknown to the user. Thus, we seek to detect
+these associations somehow.</p>
+<p>The function <code>assoc_detect</code> aims at detecting associations
+between a discrete and a set of continuous variables, using the Kruskal
+Wallis H test and then a nearest neighbours approach for the most
+centrally located point of each level. The number of nearest neighbours
+considered for each level is given by the product of the parameter
+<code>delta</code> (which we set equal to 0.10) and the number of
+observations possessing that level upon the removal of marginal
+outliers. The distance metric we use a weighted L1 norm, therefore the
+order of the Minkowski distance is set equal to a unit. For the
+Kruskal-Wallis H test we set a significance level <code>alpha1</code>
+equal to <span class="math inline">\(10^{-3}\)</span> and then for the
+goodness of fit tests used for the distribution of the nearest
+neighbours, we set a significance level <code>alpha2</code> value of
+<span class="math inline">\(10^{-1}\)</span>. We will look for
+associations for all 5 discrete variables.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>assoctns1 <span class="ot">&lt;-</span> <span class="fu">assoc_detect</span>(<span class="at">data =</span> dt,</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>                          <span class="at">marginals =</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>                          <span class="at">target_inx =</span> <span class="dv">1</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                          <span class="at">pred_inx =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                          <span class="at">delta =</span> <span class="fl">0.50</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>                          <span class="at">mink_order =</span> <span class="dv">1</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>                          <span class="at">alpha1 =</span> <span class="fl">1e-3</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>                          <span class="at">alpha2 =</span> <span class="fl">1e-2</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 1 </span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; Association detected between discrete variable 1 with continuous variables: 6 7</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>assoctns2 <span class="ot">&lt;-</span> <span class="fu">assoc_detect</span>(<span class="at">data =</span> dt,</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>                          <span class="at">marginals =</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>                          <span class="at">target_inx =</span> <span class="dv">2</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>                          <span class="at">pred_inx =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>                          <span class="at">delta =</span> <span class="fl">0.50</span>,</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>                          <span class="at">mink_order =</span> <span class="dv">1</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>                          <span class="at">alpha1 =</span> <span class="fl">1e-3</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a>                          <span class="at">alpha2 =</span> <span class="fl">1e-2</span>)</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 2 </span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; Association detected between discrete variable 2 with continuous variables: 6 7</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>assoctns3 <span class="ot">&lt;-</span> <span class="fu">assoc_detect</span>(<span class="at">data =</span> dt,</span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>                          <span class="at">marginals =</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a>                          <span class="at">target_inx =</span> <span class="dv">3</span>,</span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a>                          <span class="at">pred_inx =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a>                          <span class="at">delta =</span> <span class="fl">0.50</span>,</span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a>                          <span class="at">mink_order =</span> <span class="dv">1</span>,</span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a>                          <span class="at">alpha1 =</span> <span class="fl">1e-3</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a>                          <span class="at">alpha2 =</span> <span class="fl">1e-2</span>)</span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 3 </span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co">#&gt; No association found between discrete variable 3 and continuous variables.</span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a>assoctns4 <span class="ot">&lt;-</span> <span class="fu">assoc_detect</span>(<span class="at">data =</span> dt,</span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a>                          <span class="at">marginals =</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a>                          <span class="at">target_inx =</span> <span class="dv">4</span>,</span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a>                          <span class="at">pred_inx =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a>                          <span class="at">delta =</span> <span class="fl">0.50</span>,</span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a>                          <span class="at">mink_order =</span> <span class="dv">1</span>,</span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a>                          <span class="at">alpha1 =</span> <span class="fl">1e-3</span>,</span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a>                          <span class="at">alpha2 =</span> <span class="fl">1e-2</span>)</span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 4 </span></span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a><span class="co">#&gt; No association found between discrete variable 4 and continuous variables.</span></span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a>assoctns5 <span class="ot">&lt;-</span> <span class="fu">assoc_detect</span>(<span class="at">data =</span> dt,</span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a>                          <span class="at">marginals =</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a>                          <span class="at">target_inx =</span> <span class="dv">5</span>,</span>
+<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a>                          <span class="at">pred_inx =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a>                          <span class="at">delta =</span> <span class="fl">0.50</span>,</span>
+<span id="cb9-46"><a href="#cb9-46" tabindex="-1"></a>                          <span class="at">mink_order =</span> <span class="dv">1</span>,</span>
+<span id="cb9-47"><a href="#cb9-47" tabindex="-1"></a>                          <span class="at">alpha1 =</span> <span class="fl">1e-3</span>,</span>
+<span id="cb9-48"><a href="#cb9-48" tabindex="-1"></a>                          <span class="at">alpha2 =</span> <span class="fl">1e-2</span>)</span>
+<span id="cb9-49"><a href="#cb9-49" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 5 </span></span>
+<span id="cb9-50"><a href="#cb9-50" tabindex="-1"></a><span class="co">#&gt; No association found between discrete variable 5 and continuous variables.</span></span></code></pre></div>
+<p>As we can see, the function has successfully detected that we have an
+association between the first and the second discrete variables and the
+first 2 continuous features, while the remaining three discrete
+variables are not associated with the continuous attributes. Therefore,
+we can now proceed with the detection of joint outliers which can only
+exist in the space spanned by the first 2 continuous and the first or
+the second discrete variables.</p>
+</div>
+<div id="detecting-joint-outliers---kde_classif-elbow_angle-consec_angles-joint_outs" class="section level2">
+<h2>Detecting joint outliers - <code>kde_classif</code>,
+<code>elbow_angle</code>, <code>consec_angles</code> &amp;
+<code>joint_outs</code></h2>
+<p>Based on our findings above, it is safe to assert that there exists
+an association between the first and the second discrete variables and
+the first 2 continuous features. However, we still need to devise a
+method for detecting the observations (if any) which do not conform to
+the pattern that has been identified. Our strategy involves using KDE
+classification and looking at the misclassified observations among the
+data points which were not flagged as marginal outliers. In our case,
+the classes are overlapping - indeed, if we look back at the projection
+of the data in the first 2 continuous features that we plotted once we
+generated our data, the classes are separable but points on the
+boundaries can also be seen to “blend” with the neighbouring class. As a
+result of this “overlap”, we expect a much larger number of
+misclassifications than the actual number of joint outliers. At the same
+time, these points close to the boundary are misclassified but the
+values of the kernel density estimators under the true and the falsely
+predicted classes will not differ much. Thus, we define the KDE
+ratio:</p>
+<p><span class="math display">\[\Lambda_i = \frac{\max\limits_{l=1,
+\dots, \ell_j}\hat{f}_l\left(\boldsymbol{X}_{D_j} \mid
+\boldsymbol{X}_{i,
+C_\mathcal{J}}\right)}{\hat{f}_{l^\mathrm{true}}\left(\boldsymbol{X}_{D_j}
+\mid \boldsymbol{X}_{i, C_\mathcal{J}}\right)}.\]</span></p>
+<p>The KDE ratio will be equal to a unit if the maximum kernel density
+estimator is achieved for the true level <span class="math inline">\(l^\mathrm{true}\)</span>, otherwise it will exceed
+1. Notice that <span class="math inline">\(\hat{f}_l\)</span> refers to
+the kernel density estimator for the <span class="math inline">\(l\)</span>th level of a discrete variable (in this
+case <span class="math inline">\(\boldsymbol{X}_{D_j}\)</span>), while
+<span class="math inline">\(\boldsymbol{X}_{i, C_\mathcal{J}}\)</span>
+is the vector of values of the continuous variables <span class="math inline">\(C_\mathcal{J}\)</span> which are associated with
+the <span class="math inline">\(j\)</span>th discrete variable, for the
+<span class="math inline">\(i\)</span>th observation.</p>
+<p>Our goal is to find an optimal threshold value <span class="math inline">\(\Lambda^*_i\)</span> value, such that the joint
+outliers are the misclassified observations for which <span class="math inline">\(\Lambda_i &gt; \Lambda^*_i\)</span>. This way, we
+can restrict the number of misclassified points close to the borders to
+be treated as joint outliers. The function <code>kde_classif</code>
+performs KDE classification of a discrete variable given a set of
+associated continuous features. The <code>locfit</code> package is used
+when the set of predictors includes more than 1 variable, otherwise the
+<code>density</code> function is used (from the <code>stats</code>
+package) for univariate densities. The function requires specifying
+which observations are marginally outlying, so that these are discarded
+from the sample. Moreover, it lets the user specify the kernel to be
+used (by default the Gaussian kernel is used), as well as the value of
+the parameter <code>alpha_val</code> which is related to the adaptive
+nearest neighbours bandwidth that is used by <code>locfit</code> (see
+the package documentation for more details). Notice that these arguments
+are ignored if the set of predictors consists of 1 variable as a
+Gaussian KDE is used instead, with Silverman’s rule of thumb used to
+determine the bandwidth (see documentation of <code>density</code> for
+more information). Finally, <code>kde_classif</code> requires a
+threshold parameter <code>Lambda_i</code>; this can either be a number
+at least equal to 1, the value 0 (default), or a vector of values.
+Setting this equal to a value of 1 will simply return the misclassified
+observations, then any value larger than that will impose the additional
+constraint that <span class="math inline">\(\Lambda_i\)</span> should be
+greater than the value of <code>Lambda_i</code> and will return these
+observations instead. The default value <code>Lambda_i = 0</code> will
+return the misclassified observations for <span class="math inline">\(\Lambda^*_i = 1, 1.5, \dots, 20\)</span>. Any
+other vector will return the misclassified points for various threshold
+values specified. We set <code>Lambda_i = 0</code> and then we plot the
+number of misclassified observations for each <span class="math inline">\(\Lambda^*_i\)</span>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>kde_classifications <span class="ot">&lt;-</span> <span class="fu">kde_classif</span>(<span class="at">data =</span> dt,</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>                                   <span class="at">target_inx =</span> <span class="dv">1</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                                   <span class="at">pred_inx =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">7</span>),</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>                                   <span class="at">marg_outs =</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>                                   <span class="at">Lambda_i =</span> <span class="dv">0</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>                                   <span class="at">kernel =</span> <span class="st">&quot;gauss&quot;</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>                                   <span class="at">alpha_val =</span> <span class="fl">0.3</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="at">by =</span>.<span class="dv">5</span>), <span class="at">y =</span> kde_classifications[[<span class="dv">1</span>]],</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">&#39;l&#39;</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&#39;navy&#39;</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(Lambda[i]<span class="sc">~</span><span class="st">&quot;*&quot;</span>),</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Misclassified Observations&quot;</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Misclassified observations for varying threshold values&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The plot above reveals that a suitable <span class="math inline">\(\Lambda^*_i\)</span> value should be somewhere
+around 3. We have introduced the Method of Consecutive Angles, which is
+capable of determining a <span class="math inline">\(\Lambda^*_i\)</span> value that gives reasonable
+results using the angles between consecutive line segments that join the
+amount of misclassified points for consecutive <span class="math inline">\(\Lambda^*_i\)</span> values. This method,
+implemented in the function <code>consec_angles</code>, requires a
+vector of observed values, the range of values for which these
+observations were made (in this case that is the sequence of values from
+1 up to 20 in steps of half a unit) and 2 tolerance parameters. The
+first one, <code>drop_tol</code>, accounts for the fact that the rate of
+decrease of the misclassified observations for 2 consecutive <span class="math inline">\(\Lambda^*_i\)</span> values may be the same but if
+the actual different (or drop) exceeds a tolerated level
+<code>drop_tol</code>, it cannot be considered as insignificant. We use
+the default value of <code>drop_tol = 3</code>. Then,
+<code>range_tol</code> controls the maximum value of <span class="math inline">\(\Lambda^*_i\)</span> for which we want to use the
+method of consecutive angles. Here, we take the default
+<code>range_tol = 21</code> which corresponds to the 21st element of the
+sequence 1, 1.5, <span class="math inline">\(\dots\)</span>, 20. This is
+the value <span class="math inline">\(\Lambda^*_i = 11\)</span>, meaning
+that if the method of consecutive angles finds a <span class="math inline">\(\Lambda^*_i\)</span> value over 11, it will return
+the elbow point of the curve instead, using the <code>kneedle</code>
+algorithm. We calculate <span class="math inline">\(\Lambda_i^*\)</span>
+for our data set below. We also output the indices for the observations
+with a KDE ratio over the <span class="math inline">\(\Lambda^*_i\)</span> value returned.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>Lambda_star <span class="ot">&lt;-</span> <span class="fu">consec_angles</span>(<span class="at">vec =</span> kde_classifications[[<span class="dv">1</span>]],</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>                             <span class="at">range =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="at">by =</span> .<span class="dv">5</span>),</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                             <span class="at">drop_tol =</span> <span class="dv">3</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>                             <span class="at">range_tol =</span> <span class="dv">21</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="fu">print</span>(Lambda_star)</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; [1] 2.5</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co"># Use Lambda_star</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>Lambda_star_inx <span class="ot">&lt;-</span> <span class="fu">match</span>(Lambda_star, <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="at">by =</span> .<span class="dv">5</span>))</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co"># Joint outliers detected</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>joint_outs_det <span class="ot">&lt;-</span> kde_classifications[[<span class="dv">2</span>]][[Lambda_star_inx]]</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">length</span>(joint_outs_det))</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt; [1] 62</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="fu">summary</span>(dt[joint_outs_det, ])</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt;  V1     V2     V3     V4     V5           V6                 V7                 V8         </span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt;  1:25   1:15   1:18   1:16   1:23   Min.   :0.007521   Min.   :0.008244   Min.   :-2.9214  </span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt;  2:24   2:20   2:27   2:25   2:22   1st Qu.:0.817679   1st Qu.:0.326786   1st Qu.:-1.0033  </span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt;  3:13   3:15   3:17   3:21   3:17   Median :1.439397   Median :0.642538   Median :-0.3182  </span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt;  4: 0   4:12   4: 0   4: 0   4: 0   Mean   :1.617200   Mean   :1.170809   Mean   :-0.1012  </span></span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt;         5: 0                        3rd Qu.:2.093005   3rd Qu.:2.078094   3rd Qu.: 0.8913  </span></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt;                                     Max.   :4.676955   Max.   :3.935713   Max.   : 2.9485  </span></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt;        V9                V10               V11       </span></span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt;  Min.   :-2.50003   Min.   :-5.2080   Min.   :0.000  </span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt;  1st Qu.:-0.75156   1st Qu.:-0.8261   1st Qu.:3.000  </span></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a><span class="co">#&gt;  Median :-0.02752   Median : 0.5365   Median :3.000  </span></span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a><span class="co">#&gt;  Mean   :-0.04333   Mean   : 0.4701   Mean   :2.903  </span></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="co">#&gt;  3rd Qu.: 0.66885   3rd Qu.: 1.8117   3rd Qu.:3.000  </span></span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="co">#&gt;  Max.   : 2.78893   Max.   : 4.7520   Max.   :3.000</span></span></code></pre></div>
+<p>Indeed we can see above that just a few observations remained by
+demanding that the KDE ratio exceeds the <span class="math inline">\(\Lambda^*_i\)</span> value found by the method of
+consecutive angles and all these are joint outliers. However, the method
+of consecutive angles is not always ideal; in fact, it turns out that in
+some instances it may be better to “sacrifice” some inliers just for the
+sake of not missing many joint outliers. In any case, we provide the
+user with the <code>elbow_angle</code> function, which returns the value
+of the angle (in degrees) between the line segments joining the number
+of misclassified observations for <span class="math inline">\(\Lambda_i^* = 1\)</span> and <span class="math inline">\(\Lambda_i^* = \Lambda_\mathrm{elbow}\)</span> and
+for <span class="math inline">\(\Lambda_i^* =
+\Lambda_\mathrm{elbow}\)</span> and <span class="math inline">\(\Lambda_i^* = 20\)</span>. Notice that <span class="math inline">\(\Lambda_\mathrm{elbow}\)</span> is the value of
+<span class="math inline">\(\Lambda_i\)</span> for which an elbow in the
+curve of misclassified points is being observed. This value turns out to
+be very useful for determining the method to be used, with the number of
+discrete levels of the target discrete feature being of crucial
+importance. If the number of levels is larger than 5 for instance, the
+method of consecutive angles is the best option but for a smaller number
+of levels, going for <span class="math inline">\(\Lambda_i^*\)</span>
+equal to a small value above 1 returns better results. As an
+illustration, we calculate the elbow angle for our
+misclassifications.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>angle <span class="ot">&lt;-</span> <span class="fu">elbow_angle</span>(<span class="at">vec =</span> kde_classifications[[<span class="dv">1</span>]],</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>                     <span class="at">range =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">20</span>, <span class="at">by =</span> .<span class="dv">5</span>))</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="fu">print</span>(angle)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; [1] 166.2381</span></span></code></pre></div>
+<p>Now, we are ready to detect the joint outliers in our data set. The
+function <code>joint_outs</code> can detect the joint outliers for given
+associations between discrete and continuous features. The parameter
+<code>assoc_target</code> takes as input a vector of target discrete
+variables, which have been found to be associated with sets of
+continuous variables. Then, <code>assoc_vars</code> will be a list
+including the corresponding vectors of the continuous features
+associated with each target discrete variable that was earlier defined
+in <code>assoc_target</code>. The <code>method</code> argument can take
+3 levels; <code>&quot;consec_angles&quot;</code>, <code>&quot;conservative&quot;</code> or
+<code>&quot;bin&quot;</code>. The first option will choose a suitable value for
+the threshold parameter <span class="math inline">\(\Lambda_i^*\)</span>
+using the method of consecutive angles, as described earlier. The option
+<code>&quot;conservative&quot;</code> sets by default <span class="math inline">\(\Lambda^*_i = 3\)</span>, which is a rather
+conservative choice that is found to perform well in some cases and
+finally <code>method = &quot;bin&quot;</code> refers to the case of a binary
+target variable, where <span class="math inline">\(\Lambda^*_i =
+2\)</span> is chosen instead, due to poor performance that has been
+empirically observed for higher threshold values. The parameters
+<code>drop_tol</code> and <code>range_tol</code> can also be specified
+by the user. The <code>joint_outs</code> function will essentially make
+use of <code>kde_classif</code> with the default hyperparameter choices
+for <code>kernel</code> and <code>alpha_val</code>. If
+<code>method</code> is set equal to <code>&quot;consec_angles&quot;</code>, the
+parameter <code>Lambda_i</code> will also be set to its default of 0,
+otherwise for <code>method = &quot;conservative&quot;</code> or for
+<code>method = &quot;bin&quot;</code>, <code>Lambda_i</code> will be set equal to
+3 or 2, respectively. Them <code>drop_tol</code> and
+<code>range_tol</code> can be specified by the user. The output of
+<code>kde_classif</code> will be returned if
+<code>method = &quot;conservative&quot;</code> or if <code>method = &quot;bin&quot;</code>,
+while for <code>method = &quot;consec_angles&quot;</code>, the
+<code>consec_angles</code> function will be used to determine what a
+suitable <span class="math inline">\(\Lambda^*_i\)</span> value should
+be and the output corresponding to this value will be given to the user.
+However, if the user wishes to select their preferred
+<code>method</code> for each association according to the value of the
+elbow angle, this process needs to be done manually and the
+<code>elbow_angle</code> function should be used as well. In order to
+wrap things up, we finally detect the joint outliers based on the
+associations we found between the first and the second discrete features
+with the first 2 continuous variables. The results reveal that all joint
+outliers were detected, alongside a very small number of inliers which
+were falsely flagged to be joint outliers.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>joint_outliers <span class="ot">&lt;-</span> <span class="fu">joint_outs</span>(<span class="at">data =</span> dt,</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>                             <span class="at">marg_outs =</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>                             <span class="at">assoc_target =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>                             <span class="at">assoc_vars =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">7</span>), <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">7</span>)),</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>                             <span class="at">method =</span> <span class="st">&quot;consec_angles&quot;</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>                             <span class="at">drop_tol =</span> <span class="dv">3</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>                             <span class="at">range_tol =</span> <span class="dv">21</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">length</span>(joint_outliers))</span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; [1] 149</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="fu">table</span>(dt[joint_outliers, <span class="dv">11</span>])</span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;   0   3 </span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt;   2 147</span></span></code></pre></div>
+</div>
+<div id="a-wrapper-function-for-detecting-outliers-in-mixed-type-data---domid" class="section level2">
+<h2>A wrapper function for detecting outliers in mixed-type data -
+<code>DOMID</code></h2>
+<p>The <code>DOMID</code> function serves as a wrapper function for all
+the functions presented above. It returns a list that includes the row
+indices for marginal outliers as its first 3 elements (making the
+distinction between discrete, continuous and combined marginal outliers)
+and a vector of row indices for the joint outliers (assuming an
+association has been found). It further returns the discrete and
+continuous scores for the observations, the matrix of contributions and
+finally the value of <code>MAXLEN</code> used for the calculation of
+discrete scores. We test this on our data frame but we recommend the use
+of the functions above for a more detailed and thorough analysis. We
+also check whether the output is the same as the one we got earlier.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>outliers_detected <span class="ot">&lt;-</span> <span class="fu">DOMID</span>(<span class="at">data =</span> dt, <span class="at">disc_cols =</span> <span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">cont_cols =</span> <span class="fu">c</span>(<span class="dv">6</span><span class="sc">:</span><span class="dv">10</span>),</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>                           <span class="at">alpha =</span> <span class="fl">0.01</span>, <span class="at">MAXLEN =</span> <span class="dv">0</span>, <span class="at">rho =</span> <span class="fl">0.2</span>, <span class="at">epsilon =</span> <span class="fl">0.02</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>                           <span class="at">sample_size =</span> <span class="dv">256</span>, <span class="at">ntrees =</span> <span class="dv">500</span>, <span class="at">ndim =</span> <span class="dv">0</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>                           <span class="at">max_depth =</span> <span class="dv">100</span>, <span class="at">seed_num =</span> <span class="dv">1</span>, <span class="at">delta =</span> <span class="fl">0.5</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>                           <span class="at">mink_order =</span> <span class="dv">1</span>, <span class="at">alpha1 =</span> <span class="fl">1e-3</span>, <span class="at">alpha2 =</span> <span class="fl">1e-2</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>                           <span class="at">method =</span> <span class="st">&quot;consec_angles&quot;</span>, <span class="at">drop_tol =</span> <span class="dv">3</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>                           <span class="at">range_tol =</span> <span class="dv">21</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; Power set object created. </span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; Pre-processing done. </span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; Sequences list created. </span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; List with counts and frequencies created successfully. </span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; Outlyingness scores for discrete variables calculated.</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; Outlyingness scores for continuous variables calculated.</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; Marginal outliers detected.</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 1 </span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; Association detected between discrete variable 1 with continuous variables: 6 7 </span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 2 </span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; Association detected between discrete variable 2 with continuous variables: 6 7 </span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 3 </span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; No association found between discrete variable 3 and continuous variables.</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 4 </span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt; No association found between discrete variable 4 and continuous variables.</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt; Checking discrete variable 5 </span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; No association found between discrete variable 5 and continuous variables.</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; Outliers detected.</span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">c</span>(<span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)), joint_outliers) <span class="sc">%in%</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(outliers_detected[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])))</span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">unique</span>(<span class="fu">unlist</span>(outliers_detected[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="fu">unique</span>(<span class="fu">unlist</span>(marginal_outliers)),</span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a>                                                  joint_outliers))</span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<p>We have introduced the <code>DOMID</code> (Detecting Outliers in
+MIxed-type Data) R package and have shown how it can be used for finding
+outlying observations in a data set consisting of mixed-type data
+(i.e. continuous and discrete features). We have used an artificially
+generated data set as an example on which the main functions were
+applied. The main functions included in the package are described here
+but we encourage the user to read the documentation should anything be
+unclear.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

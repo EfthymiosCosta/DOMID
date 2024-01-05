@@ -40,17 +40,33 @@ no association has been detected.
 Detecting associations between a discrete and a set of continuous features.
 }
 \examples{
-dt <- DOMID::gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 10, n_lvls = 4,
-                                           p_outs = 0.20, jp_outs = 0.80, assoc_target = 1,
-                                           assoc_var = c(3, 4, 10), assoc_type = "quotient",
+\dontrun{dt <- DOMID::gen_marg_joint_data(n_obs = 1000,
+                                           n_disc = 5,
+                                           n_cont = 10,
+                                           n_lvls = 4,
+                                           p_outs = 0.20,
+                                           jp_outs = 0.80,
+                                           assoc_target = 1,
+                                           assoc_var = c(3, 4, 10),
+                                           assoc_type = "quotient",
                                            seed_num = 1)
 disc_scores <- DOMID::disc_scores(data = dt, disc_cols = c(1:5), alpha = 0.01, MAXLEN = 0)
 cont_scores <- DOMID::cont_scores(data = dt, cont_cols = c(6:15), sample_size = 256,
                                   ntrees = 500, ndim = 0, max_depth = 100, seed_num = 1)
-marginals <- DOMID::marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = disc_scores[[2]],
-                                     outscorecontdf = cont_scores, outscorediscdfcells = disc_scores[[3]],
-                                     alpha = 0.01, rho = 0.2, epsilon = 0.02)
+marginals <- DOMID::marg_outs_scores(data = dt,
+                                     disc_cols = c(1:5),
+                                     outscorediscdf = disc_scores[[2]],
+                                     outscorecontdf = cont_scores,
+                                     outscorediscdfcells = disc_scores[[3]],
+                                     alpha = 0.01,
+                                     rho = 0.2,
+                                     epsilon = 0.02)
 marginals <- unique(unlist(marginals))
-DOMID::assoc_detect(data = dt, marginals = marginals, target_inx = 1, pred_inx = c(6:15), delta = 0.10)
+DOMID::assoc_detect(data = dt,
+                    marginals = marginals,
+                    target_inx = 1,
+                    pred_inx = c(6:15),
+                    delta = 0.10)
+}
 
 }

@@ -14,8 +14,20 @@
 #' @return A list with 3 elements, the first being MAXLEN, the 2nd being the discrete scores of outlyingness and the 3rd being the matrix of contributions of each discrete variable to the discrete score of each observation.
 #' @export
 #'
-#' @examples dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
+#' @examples
+#' \dontrun{
+#' dt <- gen_marg_joint_data(n_obs = 1000,
+#'                           n_disc = 5,
+#'                           n_cont = 5,
+#'                           n_lvls = 3,
+#'                           p_outs = 0.05,
+#'                           jp_outs = 0.2,
+#'                           assoc_target = c(1, 2),
+#'                           assoc_vars = list(c(1, 2), c(4,5)),
+#'                           assoc_type = c('linear', 'product'),
+#'                           seed_num = 1)
 #' disc_scores(data = dt, disc_cols = c(1:5), alpha = 0.01, MAXLEN = 0)
+#' }
 disc_scores <- function(data, disc_cols, alpha = 0.01, MAXLEN = 0){
   ### INPUT CHECKS ###
   if (!is.data.frame(data)){

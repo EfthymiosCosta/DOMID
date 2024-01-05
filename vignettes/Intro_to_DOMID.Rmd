@@ -42,19 +42,28 @@ str(dt)
 As we can see, the data frame that has been generated includes 1000 observations. The first 5 variables are discrete with the number of levels we indicated plus an additional level; this level is introduced due to the generation of marginal outliers in the data set. In this case, the outliers that were generated in the discrete space will take levels that appear in very low frequencies and which are therefore indicative of an anomalous behaviour. Then, we have 5 continuous variables and finally an additional variable which is generated automatically by the function and which is a label of outlyingness. More precisely, a value of 0 indicates that the observation is not an outlier, a value of 1 indicates that the observation is a single marginal outlier (i.e. an outlier in either just the discrete or just the continuous domain), a value of 2 refers to the observation being a combined marginal outlier (i.e. an observation in both the discrete and the continuous spaces) and finally a value of 3 is assigned to joint outliers. Finally, in order to investigate whether the associations we imposed are indeed valid, we plot the first two continuous variables with points coloured according to the first and the second discrete variable levels. We make sure to discard any marginal outliers, so that the associations can be observed more easily.
 
 ```{r data_gen_plots}
-require(ggplot2)
-assoc1_plot <- ggplot(dt[which(dt$V11 %in% c(0,3)), ], aes(x = V6, y = V7)) +
-  geom_point(aes(col=V1)) + 
-  xlab('Continuous Variable 1') + ylab('Continuous Variable 2') + 
-  guides(col=guide_legend(title="Discrete\nVariable 1\nLevel")) +
-  theme_bw()
-assoc2_plot <- ggplot(dt[which(dt$V11 %in% c(0,3)), ], aes(x = V6, y = V7)) +
-  geom_point(aes(col=V2)) + 
-  xlab('Continuous Variable 1') + ylab('Continuous Variable 2') + 
-  guides(col=guide_legend(title="Discrete\nVariable 2\nLevel")) +
-  theme_bw()
-assoc1_plot
-assoc2_plot
+plot(dt[which(dt$V11 %in% c(0,3)), c(6, 7)],
+     col = dt[which(dt$V11 %in% c(0,3)), 1],
+     pch = 16,
+     xlab = 'Continuous Variable 1',
+     ylab = 'Continuous Variable 2')
+legend('topright',
+       legend = c('Level 1', 'Level 2', 'Level 3'),
+       col = c(1, 2, 3),
+       pch = 16,
+       title = 'Discrete Variable 1',
+       cex = 0.9)
+plot(dt[which(dt$V11 %in% c(0,3)), c(6, 7)],
+     col = dt[which(dt$V11 %in% c(0,3)), 2],
+     pch = 16,
+     xlab = 'Continuous Variable 1',
+     ylab = 'Continuous Variable 2')
+legend('topright',
+       legend = c('Level 1', 'Level 2', 'Level 3', 'Level 4'),
+       col = c(1, 2, 3, 4),
+       pch = 16,
+       title = 'Discrete Variable 2',
+       cex = 0.9)
 ```
 
 Indeed, we see that the associations have been generated correctly. As you may observe, there exist some points which do not seem to agree with with the relationships that we imposed; these observations are the joint outliers that were generated.
@@ -91,14 +100,23 @@ score_profile_dt <- data.frame('Type' = as.factor(dt[, 11]),
                                'Continuous_Score' = continuous_scores[, 2])
 # Score profile plot
 score_profile_dt <- score_profile_dt[order(score_profile_dt$Type), ]
-ggplot(score_profile_dt, aes(x = Discrete_Score, y=Continuous_Score)) +
-  geom_point(aes(col = Type)) + 
-  xlab('Discrete Score') + ylab('Continuous Score') +
-  ggtitle("Score profile plot for generated data set") +
-  scale_color_brewer(labels = c('Inlier', 'Single Marginal\nOutlier',
-                                  'Combined Marginal\nOutlier', 'Joint Outlier'),
-                     palette = "Paired") + 
-  theme_bw()
+par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
+plot(score_profile_dt[, c(2 ,3)],
+     col = score_profile_dt[, 1],
+     pch = 16,
+     xlab = 'Discrete Score',
+     ylab = 'Continuous Score',
+     main = "Score profile plot for generated data set")
+legend("topright",
+       inset=c(-0.325,0),
+       legend=c("Inlier",
+                "Single Marginal",
+                "Combined Marginal",
+                "Joint"),
+       col = c(1, 2, 3, 4),
+       pch=16,
+       title="Outlier Type",
+       cex = 0.85)
 ```
 
 ## Detecting marginal outliers - `marg_outs_scores` & `marg_outs`
@@ -253,7 +271,8 @@ outliers_detected <- DOMID(data = dt, disc_cols = c(1:5), cont_cols = c(6:10),
                            method = "consec_angles", drop_tol = 3,
                            range_tol = 21)
 all(c(unique(unlist(marginal_outliers)), joint_outliers) %in% unique(unlist(outliers_detected[1:4])))
-all(unique(unlist(outliers_detected[1:4])) %in% c(unique(unlist(marginal_outliers)), joint_outliers))
+all(unique(unlist(outliers_detected[1:4])) %in% c(unique(unlist(marginal_outliers)),
+                                                  joint_outliers))
 ```
 
 ## Summary

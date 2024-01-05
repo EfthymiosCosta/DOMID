@@ -5,7 +5,7 @@
 #' @param thresh_1lvl Threshold values.
 #'
 #' @return Likely itemsets of unit length.
-#'
+#' @noRd
 rm_likely_1lvl <- function(disc_pts_cat, outscoredfcells, thresh_1lvl){
   likely_1lvl_items <- c()
   for (pts in intersect(disc_pts_cat, which(apply(outscoredfcells, FUN=function(c)sum(c!=0)==1, 1)))){

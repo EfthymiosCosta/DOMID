@@ -16,7 +16,14 @@
 #' @export
 #'
 #' @examples cont_scores(data = iris, cont_cols = c(1:4))
-#' @examples cont_scores(data = iris, cont_cols = c(1:4), sample_size = 256, ntrees = 10, ndim = 1, max_depth = 10, seed_num = 100)
+#' @examples
+#' cont_scores(data = iris,
+#'             cont_cols = c(1:4),
+#'             sample_size = 256,
+#'             ntrees = 10,
+#'             ndim = 1,
+#'             max_depth = 10,
+#'             seed_num = 100)
 cont_scores <- function(data, cont_cols, sample_size = 256,
                         ntrees = 500, ndim = 0, max_depth = 100, seed_num = 1){
   ### INPUT CHECKS ###
@@ -57,7 +64,7 @@ cont_scores <- function(data, cont_cols, sample_size = 256,
                                          ndim = ndim,
                                          max_depth = max_depth,
                                          seed = seed_num)
-  outscorecontdf[, 2] <- predict(isoforest, scale(data[, cont_cols]), type="score")
+  outscorecontdf[, 2] <- stats::predict(isoforest, scale(data[, cont_cols]), type="score")
   cat('Outlyingness scores for continuous variables calculated.\n')
   return(outscorecontdf)
 }

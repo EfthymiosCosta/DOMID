@@ -6,8 +6,9 @@
 #' @param quantiles_vec Vector of quantiles for given relationship.
 #' @param out_label Index of label column, indicating which observation is outlying.
 #'
-#' @return New level, not agreeing to specified pattern,
+#' @return New level, not agreeing to specified pattern
 #'
+#' @noRd
 joint_outs_lvls <- function(data, level, value, quantiles_vec, out_label, target){
   n_lvls <- length(quantiles_vec) - 1
   if (n_lvls == 2){

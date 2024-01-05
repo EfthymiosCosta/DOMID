@@ -3,7 +3,7 @@ gen_assoc <- function(data, n_var, assoc_target, assoc_vars, assoc_type){
   if (length(assoc_vars) == 1){
     qs <- c(min(data[which(data[, (n_var+1)]==0), assoc_vars]))
     for (i in 1:n_lvls){
-      qs <- c(qs, quantile(data[which(!data[, (n_var+1)] %in% c(1,2)), assoc_vars], i/n_lvls))
+      qs <- c(qs, stats::quantile(data[which(!data[, (n_var+1)] %in% c(1,2)), assoc_vars], i/n_lvls))
     }
     for (i in row.names(data[which(data[, (n_var+1)]==0),])){
       # Set target discrete variable value based on the "rule"
@@ -23,7 +23,7 @@ gen_assoc <- function(data, n_var, assoc_target, assoc_vars, assoc_type){
       aux_vec <- aux_vec - data[which(!data[, (n_var+1)] %in% c(1,2)), assoc_vars[i]]
     }
     for (i in 1:n_lvls){
-      qs <- c(qs, quantile(aux_vec, i/n_lvls))
+      qs <- c(qs, stats::quantile(aux_vec, i/n_lvls))
     }
     for (i in row.names(data[which(data[, (n_var+1)]==0),])){
       # Set target discrete variable value based on the "rule"
@@ -49,7 +49,7 @@ gen_assoc <- function(data, n_var, assoc_target, assoc_vars, assoc_type){
       aux_vec <- aux_vec * data[which(!data[, (n_var+1)] %in% c(1,2)), assoc_vars[i]]
     }
     for (i in 1:n_lvls){
-      qs <- c(qs, quantile(aux_vec, i/n_lvls))
+      qs <- c(qs, stats::quantile(aux_vec, i/n_lvls))
     }
     for (i in row.names(data[which(data[, (n_var+1)]==0),])){
       # Set target discrete variable value based on the "rule"
@@ -75,7 +75,7 @@ gen_assoc <- function(data, n_var, assoc_target, assoc_vars, assoc_type){
       aux_vec <- aux_vec/data[which(!data[, (n_var+1)] %in% c(1,2)), assoc_vars[i]]
     }
     for (i in 1:n_lvls){
-      qs <- c(qs, quantile(aux_vec, i/n_lvls))
+      qs <- c(qs, stats::quantile(aux_vec, i/n_lvls))
     }
     for (i in row.names(data[which(data[, (n_var+1)]==0),])){
       # Set target discrete variable value based on the "rule"

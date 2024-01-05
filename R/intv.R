@@ -5,12 +5,12 @@
 #'
 #' @return Discretised vector (using quantile discretisation)
 #'
-#' @examples intv(vec = c(1:100), class = 5)
+#' @noRd
 intv <- function(vec, class){
   nbase <- (1:(class-1))/class
   nq <- numeric(length(nbase))
   for (i in 1:length(nq)) {
-    nq[i] <- quantile(vec, nbase[i])
+    nq[i] <- stats::quantile(vec, nbase[i])
   }
   res <- c(min(vec), nq, max(vec))
   res[1] <- res[1]-1

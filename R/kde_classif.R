@@ -6,10 +6,10 @@
 #' together with a set of indices of marginally outlying observations, since these observations will
 #' be discarded - one can also provide the data set without any marginal outliers and simply provide
 #' an empty vector for the marginal outliers parameter. A Kernel Density Estimator is built for each
-#' of the levels of the target feature. The value of Lambda_i is there to account for
+#' of the levels of the target feature. The value of \eqn{\Lambda_i} is there to account for
 #' the number of misclassifications for which the KDE ratio (max KDE value over all levels divided
-#' by the KDE value for the true level for each observation) exceeds Lambda_i. Setting this equal to
-#' 0 (default choice) will return results for all Lambda_i values from 1 up to 20 with a step size of 0.5.
+#' by the KDE value for the true level for each observation) exceeds \eqn{\Lambda_i}. Setting this equal to
+#' 0 (default choice) will return results for all \eqn{\Lambda_i} values from 1 up to 20 with a step size of 0.5.
 #' The locfit package is used when there are more than 1 predictor, otherwise the density function from
 #' the stats package is used for targeting univariate densities.
 #'
@@ -17,29 +17,64 @@
 #' @param target_inx Column index for target discrete variable. This variable should be of unit length and the target variable should be of class 'factor'.
 #' @param pred_inx Column index for predictor variables. The predictor variables can only be of class 'numeric'.
 #' @param marg_outs Vector of row indices for marginal outliers in the data set. These will be discarded from the KDE classification. One can set this to be an empty vector in case they provide a data set with no marginal outliers.
-#' @param Lambda_i Vector of Lambda_i values, such that the function returns the misclassified observations for which the KDE ratio exceeds the threshold value of Lambda_i. This can be any vector of values greater than 1, the default choice being 0 which corresponds to a vector of values from 1 to 20 in step sizes of 0.5.
+#' @param Lambda_i Vector of \eqn{\Lambda_i} values, such that the function returns the misclassified observations for which the KDE ratio exceeds the threshold value of \eqn{\Lambda_i}. This can be any vector of values greater than 1, the default choice being 0 which corresponds to a vector of values from 1 to 20 in step sizes of 0.5.
 #' @param kernel Kernel chosen for KDE. Default choice is 'gauss' for Gaussian kernel. This is also the only kernel used if there is just 1 predictor and this argument is ignored. Other options are 'rect', 'trwt', 'tria', 'epan' or 'bisq' for Rectangular, Triweight, Triangle, Epanechnikov and Bisquare kernels - see the documentation of locfit for more details.
-#' @param alpha_val The value of alpha that determines the kernel bandwidth. This argument is ignored if there is only 1 predictor. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where k = floor(n*alpha_val) and n is
+#' @param alpha_val The value of \eqn{\alpha} that determines the kernel bandwidth. This argument is ignored if there is only 1 predictor. The KDE estimator uses an adaptive nearest-neighbour bandwidth to overcome sparsity issues; this uses a bandwidth equal to the kth smallest distance between each point and its neighbours, where \eqn{k = \lfloor n* \alpha \rfloor} and n is
 #' the number of observations possessing each target index level of interest. Default value is 0.3 and the value can be between 0 and 1 - see the documentation of locfit for more details.
-#' @param maxk Controls space assignment for evaluation structures for the locfit evaluation. This argument is ignored if there is only 1 predictor. See locfit documentation and
-#' Loader, C. (1999) Local Regression and Likelihood, Springer. for more details. If you get errors or warnings about `Insufficient vertex space',
+#' @param maxk Controls space assignment for evaluation structures for the locfit evaluation. This argument is ignored if there is only 1 predictor. See locfit documentation
+#' for more details. If you get errors or warnings about `Insufficient vertex space',
 #' locfit's default assigment can be increased by increasing 'maxk'. Default value is 1000.
 #'
 #' @return A list with 2 elements. The first element is a vector of length
 #' equal to length(Lambda_i), including the number of misclassifications for which the KDE ratio exceeds
 #' the elements of Lambda_i. The second element is a list of length equal to length(Lambda_i), with the
 #' indices of the misclassified observation for which the KDE ratio exceeds the elements of Lambda_i.
-#' Setting Lambda_i equal to its default value of 0 will consider Lambda_i to be equal to a vector of
+#' Setting Lambda_i equal to its default value of 0 will set the argument equal to a vector of
 #' values from 1 up to 20, with step size of 0.5.
 #' @export
 #'
-#' @examples dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = 1, assoc_vars = c(1, 2), assoc_type = 'linear', seed_num = 1)
+#' @examples
+#' \dontrun{
+#' dt <- gen_marg_joint_data(n_obs = 1000,
+#'                           n_disc = 5,
+#'                           n_cont = 5,
+#'                           n_lvls = 3,
+#'                           p_outs = 0.05,
+#'                           jp_outs = 0.2,
+#'                           assoc_target = 1,
+#'                           assoc_vars = c(1, 2),
+#'                           assoc_type = 'linear',
+#'                           seed_num = 1)
 #' discrete_scores <- disc_scores(dt, c(1:5))
 #' continuous_scores <- cont_scores(dt, c(6:10))
-#' marginal_outs <- unique(unlist(marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]])))
-#' kde_classification <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 0, kernel = 'gauss', alpha_val = 0.3)
-#' kde_classification2 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = c(1.5, 5, 7.3, 21.1), kernel = 'epan', alpha_val = 0.5)
-#' kde_classification3 <- kde_classif(data = dt, target_inx = c(1), pred_inx = c(6, 7), marg_outs = marginal_outs, Lambda_i = 8, kernel = 'rect', alpha_val = 0.9, maxk = 2000)
+#' marginal_outs <- unique(unlist(marg_outs_scores(data = dt,
+#'                                                 disc_cols = c(1:5),
+#'                                                 outscorediscdf = discrete_scores[[2]],
+#'                                                 outscorecontdf = continuous_scores,
+#'                                                 outscorediscdfcells = discrete_scores[[3]])))
+#' kde_classification <- kde_classif(data = dt,
+#'                                   target_inx = c(1),
+#'                                   pred_inx = c(6, 7),
+#'                                   marg_outs = marginal_outs,
+#'                                   Lambda_i = 0,
+#'                                   kernel = 'gauss',
+#'                                   alpha_val = 0.3)
+#' kde_classification2 <- kde_classif(data = dt,
+#'                                    target_inx = c(1),
+#'                                    pred_inx = c(6, 7),
+#'                                    marg_outs = marginal_outs,
+#'                                    Lambda_i = c(1.5, 5, 7.3, 21.1),
+#'                                    kernel = 'epan',
+#'                                    alpha_val = 0.5)
+#' kde_classification3 <- kde_classif(data = dt,
+#'                                    target_inx = c(1),
+#'                                    pred_inx = c(6, 7),
+#'                                    marg_outs = marginal_outs,
+#'                                    Lambda_i = 8,
+#'                                    kernel = 'rect',
+#'                                    alpha_val = 0.9,
+#'                                    maxk = 2000)
+#' }
 kde_classif <- function(data, target_inx, pred_inx, marg_outs,
                         Lambda_i = 0, kernel = "gauss", alpha_val = 0.3, maxk = 1000){
   ### INPUT CHECKS ###
@@ -109,7 +144,7 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
   pred_dens_mat <- matrix(NA, nrow = nrow(data_no_marg), ncol = length(unique(data_no_marg[, target_inx])))
   for (i in 1:length(unique(data_no_marg[, target_inx]))){
     if (aux){
-      pred_dens_mat[,i] <- sapply(1:nrow(data_no_marg), FUN = function(j) predict(fits[[i]], data_no_marg[j, pred_inx]))
+      pred_dens_mat[,i] <- sapply(1:nrow(data_no_marg), FUN = function(j) stats::predict(fits[[i]], data_no_marg[j, pred_inx]))
     } else {
       pred_dens_mat[,i] <- sapply(1:nrow(data_no_marg), FUN = function(j) KDE_pred_1d(data_no_marg[j, pred_inx], data_no_marg_lvl[[i]], h = fits[[i]]$bw))
     }
@@ -139,14 +174,14 @@ kde_classif <- function(data, target_inx, pred_inx, marg_outs,
         true_class <- data_no_marg[which(row.names(data_no_marg)==dens_missed[i]), target_inx]
         # Look at local densities
         if (aux){
-          true_dens <- predict(fits[[true_class]], obs)
+          true_dens <- stats::predict(fits[[true_class]], obs)
         } else {
           true_dens <- KDE_pred_1d(t = obs, xs = data_no_marg_lvl[[true_class]], h = fits[[true_class]]$bw)
         }
         dens_preds <- c()
         for (j in 1:length(fits)){
           if (aux){
-            dens_preds <- c(dens_preds, predict(fits[[j]], obs))
+            dens_preds <- c(dens_preds, stats::predict(fits[[j]], obs))
           } else {
             dens_preds <- c(dens_preds, KDE_pred_1d(t = obs, xs = data_no_marg_lvl[[j]], h=fits[[j]]$bw))
           }

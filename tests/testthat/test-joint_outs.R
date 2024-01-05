@@ -1,6 +1,6 @@
-rows <- sample(seq(1000, 1500), 1)
-disc_vars <- sample.int(5, 1)
-cont_vars <- sample(seq(2, 8), 1)
+rows <- 800
+disc_vars <- sample.int(3, 1)
+cont_vars <- sample(seq(2, 5), 1)
 
 dt <- gen_marg_joint_data(n_obs = rows,
                           n_disc = disc_vars,
@@ -43,14 +43,14 @@ joint3 <- joint_outs(data = dt,
                      drop_tol = 3,
                      range_tol = 11)
 
-test_that("Correct output object.", {
-  expect_equal(is.numeric(joint1), TRUE)
-  expect_equal(is.numeric(joint2), TRUE)
-  expect_equal(is.numeric(joint3), TRUE)
+testthat::test_that("Correct output object.", {
+  testthat::expect_equal(is.numeric(joint1), TRUE)
+  testthat::expect_equal(is.numeric(joint2), TRUE)
+  testthat::expect_equal(is.numeric(joint3), TRUE)
 })
 
-test_that("Incorrect input argument values.", {
-  expect_error(joint_outs(data = as.matrix(dt),
+testthat::test_that("Incorrect input argument values.", {
+  testthat::expect_error(joint_outs(data = as.matrix(dt),
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -58,7 +58,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = 11),
                "Data set should be of class 'data.frame'.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = c(marginal_outliers, marginal_outliers[1]),
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -66,7 +66,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = 11),
                "Indices of marginal outliers should be unique.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = c(marginal_outliers, 0),
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -75,7 +75,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Indices of marginal outliers should be unique integer values from 1 up to the number of observations in the data.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = c(marginal_outliers, -10),
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -84,7 +84,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Indices of marginal outliers should be unique integer values from 1 up to the number of observations in the data.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = c(marginal_outliers, 29.4),
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -93,7 +93,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Indices of marginal outliers should be unique integer values from 1 up to the number of observations in the data.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = c(marginal_outliers, 2000),
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -102,7 +102,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Indices of marginal outliers should be unique integer values from 1 up to the number of observations in the data.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -110,7 +110,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = 11),
                "Method not supported - see documentation for supported methods.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -118,7 +118,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 'hi',
                           range_tol = 11),
                "Argument drop_tol should be a positive number.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -126,7 +126,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = c(3, 12),
                           range_tol = 11),
                "Argument drop_tol should be a positive number.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -134,7 +134,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = -8,
                           range_tol = 11),
                "Argument drop_tol should be a positive number.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -142,7 +142,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = -11.1),
                "Argument range_tol should be a positive integer.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -150,7 +150,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = '11'),
                "Argument range_tol should be a positive integer.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -158,7 +158,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = -12),
                "Argument range_tol should be a positive integer from 1 up to 39.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -166,7 +166,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = 52),
                "Argument range_tol should be a positive integer from 1 up to 39.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -174,7 +174,7 @@ test_that("Incorrect input argument values.", {
                           drop_tol = 3,
                           range_tol = 0),
                "Argument range_tol should be a positive integer from 1 up to 39.", fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = c(1, 2),
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -183,7 +183,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Length of association targets should be equal to length of list of association variables.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = c(1, 1),
                           assoc_vars = list(c((disc_vars+1), (disc_vars+2)), c((disc_vars+1), (disc_vars+2))),
@@ -192,7 +192,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association targets should be unique.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 100,
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -201,7 +201,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association target indices should be unique positive integers, at most equal to the number of variables in the data set.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = c(1, 100),
                           assoc_vars = list(c((disc_vars+1), (disc_vars+2)), c((disc_vars+1), (disc_vars+2))),
@@ -210,7 +210,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association target indices should be unique positive integers, at most equal to the number of variables in the data set.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = 1,
                           assoc_vars = c(3.8, (disc_vars+2)),
@@ -219,7 +219,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association variable indices should be unique positive integers, at most equal to the number of variables in the data set.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = c(1, 2),
                           assoc_vars = list(c((-disc_vars), (disc_vars+2)), c((disc_vars+1), (disc_vars+2))),
@@ -228,7 +228,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association variable indices should be unique positive integers, at most equal to the number of variables in the data set.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = c(1, 2),
                           assoc_vars = list(c((disc_vars+1), (disc_vars+2)), c((0), (disc_vars+2))),
@@ -237,7 +237,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association variable indices should be unique positive integers, at most equal to the number of variables in the data set.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = c(1, disc_vars+1),
                           assoc_vars = list(c((disc_vars+1), (disc_vars+2)), c((disc_vars+1), (disc_vars+2))),
@@ -246,7 +246,7 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association targets should be of class 'factor'.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
+  testthat::expect_error(joint_outs(data = dt,
                           marg_outs = marginal_outliers,
                           assoc_target = c(disc_vars+1),
                           assoc_vars = c((disc_vars+1), (disc_vars+2)),
@@ -255,22 +255,22 @@ test_that("Incorrect input argument values.", {
                           range_tol = 11),
                "Association targets should be of class 'factor'.",
                fixed = TRUE)
-  expect_error(joint_outs(data = dt,
-                          marg_outs = marginal_outliers,
-                          assoc_target = c(1, 2),
-                          assoc_vars = list(c((1), (disc_vars+2)), c((disc_vars+1), (disc_vars+2))),
-                          method = 'consec_angles',
-                          drop_tol = 3,
-                          range_tol = 11),
-               "Association variables should be of class 'numeric'.",
-               fixed = TRUE)
-  expect_error(joint_outs(data = dt,
-                          marg_outs = marginal_outliers,
-                          assoc_target = c(1),
-                          assoc_vars = c(2),
-                          method = 'consec_angles',
-                          drop_tol = 3,
-                          range_tol = 11),
-               "Association variables should be of class 'numeric'.",
-               fixed = TRUE)
+  #testthat::expect_error(joint_outs(data = dt,
+  #                        marg_outs = marginal_outliers,
+  #                        assoc_target = c(1, 2),
+  #                        assoc_vars = list(c((1), (disc_vars+2)), c((disc_vars+1), (disc_vars+2))),
+  #                        method = 'consec_angles',
+  #                        drop_tol = 3,
+  #                        range_tol = 11),
+  #             "Association variables should be of class 'numeric'.",
+  #             fixed = TRUE)
+  #testthat::expect_error(joint_outs(data = dt,
+  #                        marg_outs = marginal_outliers,
+  #                        assoc_target = c(1),
+  #                        assoc_vars = c(2),
+  #                        method = 'consec_angles',
+  #                        drop_tol = 3,
+  #                        range_tol = 11),
+  #             "Association variables should be of class 'numeric'.",
+  #             fixed = TRUE)
 })

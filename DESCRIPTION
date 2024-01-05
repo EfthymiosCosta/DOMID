@@ -1,6 +1,6 @@
 Package: DOMID
 Title: Detecting Outliers in MIxed-type Data (DOMID)
-Version: 0.0.1.0000
+Version: 1.0
 Authors@R: 
     person("Efthymios", "Costa", , "efthymios.costa17@imperial.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-1267-1165"))
@@ -12,19 +12,17 @@ RoxygenNote: 7.2.3
 Imports: 
     Biobase,
     Ckmeans.1d.dp,
-    cluster,
     clusterGeneration,
     DescTools,
     isotree,
-    kneedle,
     locfit,
-    matrixStats,
     mvtnorm,
+    quantmod,
     rje,
-    rospca,
-    testthat
+    rospca
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
 Config/testthat/edition: 3

@@ -26,10 +26,10 @@
 #' infrequent itemsets. Default value is 0.01.
 #' @param rho Maximum proportion of outliers believed to be in the data set. Used together with epsilon
 #' to determine a stopping criterion for the search for marginal outliers based on scores of outlyingness.
-#' Must be a real number in range (0, 0.5) with rho + epsilon <= 0.5. A smaller rho assumes less outliers.
+#' Must be a real number in range (0, 0.5) with rho + epsilon \eqn{\leq 0.50} (\eqn{\rho + \epsilon \leq 0.5}). A smaller rho assumes less outliers.
 #' Defaults to 0.20 (20%).
 #' @param epsilon Additional proportion of outliers that we are willing to tolerate. Must be a number
-#' in the range (0, 0.25) with rho + epsilon <= 0.5. Must also be smaller than rho, as it only represents
+#' in the range (0, 0.25) with rho + epsilon \eqn{\leq 0.50} (\eqn{\rho + \epsilon \leq 0.5}). Must also be smaller than rho, as it only represents
 #' the additional error. Defaults to 0.02 (2%).
 #' @return A list with 3 vectors; the vector "Discrete" includes the row indices
 #' for the observations which are marginally outlying in the discrete space only (single
@@ -39,11 +39,29 @@
 #' the combined marginal observations.
 #' @export
 #'
-#' @examples dt <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = c(1, 2), assoc_vars = list(c(1, 2), c(4,5)), assoc_type = c('linear', 'product'), seed_num = 1)
+#' @examples
+#' \dontrun{
+#' dt <- gen_marg_joint_data(n_obs = 1000,
+#'                           n_disc = 5,
+#'                           n_cont = 5,
+#'                           n_lvls = 3,
+#'                           p_outs = 0.05,
+#'                           jp_outs = 0.2,
+#'                           assoc_target = c(1, 2),
+#'                           assoc_vars = list(c(1, 2), c(4,5)),
+#'                           assoc_type = c('linear', 'product'),
+#'                           seed_num = 1)
 #' discrete_scores <- disc_scores(data = dt, disc_cols = c(1:5))
 #' continuous_scores <- cont_scores(data = dt, cont_cols = c(6:10))
-#' marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = discrete_scores[[2]], outscorecontdf = continuous_scores, outscorediscdfcells = discrete_scores[[3]], alpha = 0.01, rho = 0.20, epsilon = 0.02)
-#'
+#' marg_outs_scores(data = dt,
+#'                  disc_cols = c(1:5),
+#'                  outscorediscdf = discrete_scores[[2]],
+#'                  outscorecontdf = continuous_scores,
+#'                  outscorediscdfcells = discrete_scores[[3]],
+#'                  alpha = 0.01,
+#'                  rho = 0.20,
+#'                  epsilon = 0.02)
+#' }
 marg_outs_scores <- function(data, disc_cols, outscorediscdf, outscorecontdf, outscorediscdfcells, alpha = 0.01, rho = 0.20, epsilon = 0.02){
   ### INPUT CHECKS ###
   if (!is.data.frame(data)){
@@ -194,7 +212,7 @@ marg_outs_scores <- function(data, disc_cols, outscorediscdf, outscorecontdf, ou
     large_gaps <- c()
     for (k in c(2:20)){
       large_gaps <- c(large_gaps,
-                      length(sorted_diffs_cont[which((sorted_diffs_cont-mean(sorted_diffs_cont))>=k*sd(sorted_diffs_cont))]))
+                      length(sorted_diffs_cont[which((sorted_diffs_cont-mean(sorted_diffs_cont))>=k*stats::sd(sorted_diffs_cont))]))
     }
     gaps <- as.data.frame(table(large_gaps))
     gaps[,1] <- as.numeric(as.character(gaps[,1]))
@@ -212,7 +230,7 @@ marg_outs_scores <- function(data, disc_cols, outscorediscdf, outscorecontdf, ou
       k_chebyshev <- 20
     }
 
-    outlying_diffs <- sorted_diffs_cont[which((sorted_diffs_cont-mean(sorted_diffs_cont))>=k_chebyshev*sd(sorted_diffs_cont))]
+    outlying_diffs <- sorted_diffs_cont[which((sorted_diffs_cont-mean(sorted_diffs_cont))>=k_chebyshev*stats::sd(sorted_diffs_cont))]
     inxs <- which(sorted_diffs_cont %in% outlying_diffs)
     cont_thresh_vec <- sort(outscorecontdf[-disc_pts_cat, 2])[c(inxs)]
     # Filter out scores below 0.4

@@ -36,5 +36,8 @@ a drop is found exceeds range_tol, the kneedle algorithm is used and the elbow p
 returned instead.
 }
 \examples{
-consec_angles(vec = sort(rnorm(10), decreasing = TRUE), range = c(1:10), drop_tol = 0.7, range_tol = 8)
+consec_angles(vec = sort(rnorm(10), decreasing = TRUE),
+              range = c(1:10),
+              drop_tol = 0.7,
+              range_tol = 8)
 }

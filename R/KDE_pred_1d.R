@@ -5,12 +5,12 @@
 #' @param h Bandwidth for KDE
 #'
 #' @return Prediction for 1D Gaussian KDE
-#'
+#' @noRd
 KDE_pred_1d <- function(t, xs, h){
   kernelValues <- rep(0,length(xs))
   for(i in 1:length(xs)){
     transformed = (t - xs[i]) / h
-    kernelValues[i] <- dnorm(transformed, mean = 0, sd = 1) / h
+    kernelValues[i] <- stats::dnorm(transformed, mean = 0, sd = 1) / h
   }
   return(sum(kernelValues) / length(xs))
 }

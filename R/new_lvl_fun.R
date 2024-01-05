@@ -6,6 +6,7 @@
 #'
 #' @return New discrete level for discrete observation.
 #'
+#' @noRd
 new_lvl_fun <- function(new_lvl, value, quantiles_vec){
   n_lvls <- length(quantiles_vec)-1
   if (length(new_lvl)>1){

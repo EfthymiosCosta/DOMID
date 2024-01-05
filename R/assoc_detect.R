@@ -12,18 +12,35 @@
 #' @return A vector of the predictor indices associated with the target discrete feature of interest. If NULL,
 #' no association has been detected.
 #' @export
-#' @examples dt <- DOMID::gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 10, n_lvls = 4,
-#'                                            p_outs = 0.20, jp_outs = 0.80, assoc_target = 1,
-#'                                            assoc_var = c(3, 4, 10), assoc_type = "quotient",
+#' @examples
+#' \dontrun{dt <- DOMID::gen_marg_joint_data(n_obs = 1000,
+#'                                            n_disc = 5,
+#'                                            n_cont = 10,
+#'                                            n_lvls = 4,
+#'                                            p_outs = 0.20,
+#'                                            jp_outs = 0.80,
+#'                                            assoc_target = 1,
+#'                                            assoc_var = c(3, 4, 10),
+#'                                            assoc_type = "quotient",
 #'                                            seed_num = 1)
 #' disc_scores <- DOMID::disc_scores(data = dt, disc_cols = c(1:5), alpha = 0.01, MAXLEN = 0)
 #' cont_scores <- DOMID::cont_scores(data = dt, cont_cols = c(6:15), sample_size = 256,
 #'                                   ntrees = 500, ndim = 0, max_depth = 100, seed_num = 1)
-#' marginals <- DOMID::marg_outs_scores(data = dt, disc_cols = c(1:5), outscorediscdf = disc_scores[[2]],
-#'                                      outscorecontdf = cont_scores, outscorediscdfcells = disc_scores[[3]],
-#'                                      alpha = 0.01, rho = 0.2, epsilon = 0.02)
+#' marginals <- DOMID::marg_outs_scores(data = dt,
+#'                                      disc_cols = c(1:5),
+#'                                      outscorediscdf = disc_scores[[2]],
+#'                                      outscorecontdf = cont_scores,
+#'                                      outscorediscdfcells = disc_scores[[3]],
+#'                                      alpha = 0.01,
+#'                                      rho = 0.2,
+#'                                      epsilon = 0.02)
 #' marginals <- unique(unlist(marginals))
-#' DOMID::assoc_detect(data = dt, marginals = marginals, target_inx = 1, pred_inx = c(6:15), delta = 0.10)
+#' DOMID::assoc_detect(data = dt,
+#'                     marginals = marginals,
+#'                     target_inx = 1,
+#'                     pred_inx = c(6:15),
+#'                     delta = 0.10)
+#' }
 #'
 assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mink_order = 1, alpha1 = 1e-3, alpha2 = 1e-1){
   ### INPUT CHECKS ###
@@ -91,7 +108,9 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
     levels_num <- length(which(classes_prob > 0))
     # Remove classes with 0 probability caused by factors
     zero_classes <- which(classes_prob == 0)
-    classes_prob <- classes_prob[-zero_classes]
+    if (length(zero_classes)==0){
+      classes_prob <- classes_prob[-zero_classes]
+    }
     best_subset <- c()
     best_subset_list <- list()
     best_p_prod <- c()
@@ -100,18 +119,20 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
       p_vals <- c()
       for (class in c(1:levels_num)){
         dt_cleaned_1 <- dt_cleaned[which(dt_cleaned[, target_inx]==class), subset]
-        test_dist_mat <- as.matrix(dist(dt_cleaned_1, method='minkowski', p=mink_order))
+        test_dist_mat <- as.matrix(stats::dist(dt_cleaned_1, method='minkowski', p=mink_order))
         centre_pt <- which.min(Biobase::rowMedians(test_dist_mat))
         # We get index from original data set
         labels <- which(dt_cleaned[, target_inx]==class)
         inx <- labels[centre_pt]
         # Obtain distances using relevant distance metric
-        dist_mat_full <- as.matrix(dist(dt_cleaned[, subset], method='manhattan'))
+        dist_mat_full <- as.matrix(stats::dist(dt_cleaned[, subset], method='manhattan'))
         # Define number of neighbours
         num_neighbours <- ceiling(delta*nrow(dt_cleaned[which(dt_cleaned[, target_inx]==class), ]))
         closest_pts <- order(dist_mat_full[inx, ], decreasing = FALSE)[2:(num_neighbours+1)]
         classes_freq <- as.vector(table(dt_cleaned[closest_pts, target_inx]))
-        classes_freq <- classes_freq[-zero_classes]
+        if (length(zero_classes)==0){
+          classes_freq <- classes_freq[-zero_classes]
+        }
         p_vals <- c(p_vals, stats::chisq.test(classes_freq, p = classes_prob, simulate.p.value = FALSE)$p.value)
       }
       if (all(sort(p_vals) < alpha2/(levels_num-order(p_vals)+1))){
@@ -152,7 +173,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
             dt_cleaned_1 <- dt_cleaned[which(dt_cleaned[, target_inx]==class), subset]
             robpca_test <- rospca::robpca(x = dt_cleaned_1, k = ncol(dt_cleaned_1), alpha = 0.5, ndir=5000)
             robpca_rotated_dt <- as.matrix(dt_cleaned[, subset]) %*% robpca_test$loadings
-            test_dist_mat <- DOMID:::dist_fun(robpca_rotated_dt, 1/robpca_test$eigenvalues, mink_order)
+            test_dist_mat <- dist_fun(robpca_rotated_dt, 1/robpca_test$eigenvalues, mink_order)
             centre_pt <- which.min(Biobase::rowMedians(test_dist_mat[which(dt_cleaned[, target_inx] == class),
                                                                      which(dt_cleaned[, target_inx] == class)]))
             # We get index from original data set
@@ -162,7 +183,9 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
             num_neighbours <- ceiling(delta*nrow(dt_cleaned[which(dt_cleaned[, target_inx]==class), ]))
             closest_pts <- order(test_dist_mat[inx_position, ], decreasing = FALSE)[2:(num_neighbours+1)]
             classes_freq <- as.vector(table(dt_cleaned[closest_pts, target_inx]))
-            classes_freq <- classes_freq[-zero_classes]
+            if (length(zero_classes)==0){
+              classes_freq <- classes_freq[-zero_classes]
+            }
             p_vals <- c(p_vals, stats::chisq.test(classes_freq, p = classes_prob, simulate.p.value = FALSE)$p.value)
           }
           if (all(p_vals < alpha2/(levels_num-rank(p_vals)+1))){
@@ -209,7 +232,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
               dt_cleaned_1 <- dt_cleaned[which(dt_cleaned[, target_inx]==class), subset]
               robpca_test <- rospca::robpca(x = dt_cleaned_1, k = ncol(dt_cleaned_1), alpha = 0.5, ndir=5000)
               robpca_rotated_dt <- as.matrix(dt_cleaned[, subset]) %*% robpca_test$loadings
-              test_dist_mat <- DOMID:::dist_fun(robpca_rotated_dt, 1/robpca_test$eigenvalues, mink_order)
+              test_dist_mat <- dist_fun(robpca_rotated_dt, 1/robpca_test$eigenvalues, mink_order)
               centre_pt <- which.min(Biobase::rowMedians(test_dist_mat[which(dt_cleaned[, target_inx] == class),
                                                                        which(dt_cleaned[, target_inx] == class)]))
               # We get index from original data set
@@ -219,7 +242,9 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
               num_neighbours <- ceiling(delta*nrow(dt_cleaned[which(dt_cleaned[, target_inx]==class), ]))
               closest_pts <- order(test_dist_mat[inx_position, ], decreasing = FALSE)[2:(num_neighbours+1)]
               classes_freq <- as.vector(table(dt_cleaned[closest_pts, target_inx]))
-              classes_freq <- classes_freq[-zero_classes]
+              if (length(zero_classes)==0){
+                classes_freq <- classes_freq[-zero_classes]
+              }
               p_vals <- c(p_vals, stats::chisq.test(classes_freq, p = classes_prob, simulate.p.value = FALSE)$p.value)
             }
             if (all(p_vals < (1e-1)/(levels_num-rank(p_vals)+1))){

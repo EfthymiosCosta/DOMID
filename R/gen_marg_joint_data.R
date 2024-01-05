@@ -25,9 +25,45 @@
 #' (corresponding to values 0, 1, 2 and 3, respectively). Discrete variables are returned as factor class.
 #' @export
 #'
-#' @examples data <- gen_marg_joint_data(n_obs = 1000, n_disc = 5, n_cont = 5, n_lvls = 3, p_outs = 0.05, jp_outs = 0.2, assoc_target = 1, assoc_vars = c(1, 2), assoc_type = "linear", seed_num = 1)
-#' @examples data <- gen_marg_joint_data(n_obs = 3000, n_disc = 4, n_cont = 8, n_lvls = c(3, 4, 3, 4), p_outs = 0.10, jp_outs = 0.6, assoc_target = 2, assoc_vars = c(1, 2, 7), assoc_type = "product", seed_num = 1)
-#' @examples data <- gen_marg_joint_data(n_obs = 5000, n_disc = 5, n_cont = 3, n_lvls = 4, p_outs = 0.20, jp_outs = 0.1, assoc_target = c(2, 5), assoc_vars = list(c(1, 2), c(2,3)), assoc_type = c("product", "quotient"), seed_num = 1)
+#' @examples
+#' \dontrun{
+#' data <- gen_marg_joint_data(n_obs = 1000,
+#'                             n_disc = 5,
+#'                             n_cont = 5,
+#'                             n_lvls = 3,
+#'                             p_outs = 0.05,
+#'                             jp_outs = 0.2,
+#'                             assoc_target = 1,
+#'                             assoc_vars = c(1, 2),
+#'                             assoc_type = "linear",
+#'                             seed_num = 1)
+#' }
+#' @examples
+#' \dontrun{
+#' data <- gen_marg_joint_data(n_obs = 800,
+#'                             n_disc = 4,
+#'                             n_cont = 8,
+#'                             n_lvls = c(3, 4, 3, 4),
+#'                             p_outs = 0.10,
+#'                             jp_outs = 0.6,
+#'                             assoc_target = 2,
+#'                             assoc_vars = c(1, 2, 7),
+#'                             assoc_type = "product",
+#'                             seed_num = 1)
+#' }
+#' @examples
+#' \dontrun{
+#' data <- gen_marg_joint_data(n_obs = 1000,
+#'                             n_disc = 5,
+#'                             n_cont = 3,
+#'                             n_lvls = 4,
+#'                             p_outs = 0.20,
+#'                             jp_outs = 0.1,
+#'                             assoc_target = c(2, 5),
+#'                             assoc_vars = list(c(1, 2), c(2,3)),
+#'                             assoc_type = c("product", "quotient"),
+#'                             seed_num = 1)
+#' }
 gen_marg_joint_data <- function(n_obs, n_disc, n_cont, n_lvls,
                                 p_outs, jp_outs, assoc_target, assoc_vars,
                                 assoc_type = "linear", seed_num = 1){

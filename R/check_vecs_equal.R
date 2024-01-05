@@ -5,7 +5,7 @@
 #'
 #' @return Sum of common elements of vec1 and vec2
 #'
-#' @examples check_vecs_equal(c(1,2), c(1,0))
+#' @noRd
 
 check_vecs_equal <- function(vec1, vec2){
   sum(vec1==vec2)

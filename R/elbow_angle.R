@@ -31,14 +31,15 @@ elbow_angle <- function(vec, range){
   stopifnot("Range vector should consist of strictly increasing unique values." = !is.unsorted(range, strictly = TRUE))
   ### END OF CHECKS ###
   # Check if range includes negative values and shift them towards 0
-  if (length(range < 0) > 1){
+  if (sum(range < 0) > 1){
     range <- range - min(range)
   }
   # First make range on same scale as vec
   range_scaled <- range * max(vec)
   # Find knee point
-  elbow <- kneedle::kneedle(x = range_scaled, y = vec,
-                            decreasing = TRUE, concave = FALSE)
+  elbow <- kneedle(x = range_scaled, y = vec,
+                   decreasing = TRUE, concave = FALSE)
+  # elbow <- kneedle::kneedle()
   elbow_inx <- match(elbow[1], range_scaled)
   # Compute elbow angle
   angle <- atan(abs((elbow[1]-range_scaled[1])/(vec[elbow_inx]-vec[1]))) +

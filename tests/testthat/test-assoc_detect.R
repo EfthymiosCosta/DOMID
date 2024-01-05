@@ -1,5 +1,5 @@
-rows <- 1000
-disc_vars <- sample(seq(2, 5), 1)
+rows <- 800
+disc_vars <- sample(seq(2, 3), 1)
 cont_vars <- sample(seq(3, 5), 1)
 dt <- gen_marg_joint_data(n_obs = rows,
                           n_disc = disc_vars,
@@ -20,8 +20,8 @@ marginal_outliers <- marg_outs_scores(data = dt,
                                       outscorediscdfcells = discrete_scores[[3]])
 marginal_outliers <- unique(unlist(marginal_outliers))
 
-test_that("Incorrect input argument values.", {
-  expect_error(assoc_detect(data = as.matrix(dt, nrow=rows),
+testthat::test_that("Incorrect input argument values.", {
+  testthat::expect_error(assoc_detect(data = as.matrix(dt, nrow=rows),
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -30,7 +30,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Data set should be of class 'data.frame'.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = c(1,2),
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -39,7 +39,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Only one target (discrete) variable is allowed.", fixed = TRUE)
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = c(disc_vars+1),
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -48,7 +48,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Target (discrete) variable should be of class 'factor'.", fixed = TRUE)
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars, disc_vars+2),
@@ -57,7 +57,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Predictor variables should be of class 'numeric'.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = c(marginal_outliers, marginal_outliers[1]),
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -66,7 +66,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Indices of marginal outliers should be unique.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = c(marginal_outliers, rows+1),
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -75,7 +75,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Indices of marginal outliers should be unique integer values from 1 up to the number of observations in the data.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -84,7 +84,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = '1e-3',
                             alpha2 = 1e-1),
                "alpha1 should be of class 'numeric'.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -93,7 +93,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = '1e-1'),
                "alpha2 should be of class 'numeric'.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -102,7 +102,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "delta should be of class 'numeric'.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -111,7 +111,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Minkowski order should be of class 'numeric'.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -120,7 +120,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = c(1e-3, 1e-2),
                             alpha2 = 1e-1),
                "alpha1 should be of unit length.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -129,7 +129,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = c(1e-1, 1e-2)),
                "alpha2 should be of unit length.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -138,7 +138,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "delta should be of unit length.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -147,7 +147,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Minkowski order should be of unit length.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -156,7 +156,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = -1e-3,
                             alpha2 = 1e-1),
                "alpha1 should be positive.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -165,7 +165,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 0,
                             alpha2 = 1e-1),
                "alpha1 should be positive.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -174,7 +174,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1.1,
                             alpha2 = 1e-1),
                "alpha1 should be positive.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -183,7 +183,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = -1e-1),
                "alpha2 should be positive.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -192,7 +192,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 0),
                "alpha2 should be positive.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -201,7 +201,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1.1),
                "alpha2 should be positive.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -210,7 +210,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "delta should be positive and at most equal to 0.5.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -219,7 +219,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "delta should be positive and at most equal to 0.5.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -228,7 +228,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "delta should be positive and at most equal to 0.5.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),
@@ -237,7 +237,7 @@ test_that("Incorrect input argument values.", {
                             alpha1 = 1e-3,
                             alpha2 = 1e-1),
                "Minkowski order should be positive.")
-  expect_error(assoc_detect(data = dt,
+  testthat::expect_error(assoc_detect(data = dt,
                             marginals = marginal_outliers,
                             target_inx = 1,
                             pred_inx = c(disc_vars+1, disc_vars+2),

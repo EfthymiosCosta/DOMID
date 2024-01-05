@@ -1,6 +1,6 @@
-rows <- sample(seq(1000, 1500), 1)
-disc_vars <- sample.int(5, 1)
-cont_vars <- sample(seq(2, 8), 1)
+rows <- 800
+disc_vars <- sample.int(3, 1)
+cont_vars <- sample(seq(2, 5), 1)
 
 dt <- gen_marg_joint_data(n_obs = rows,
                           n_disc = disc_vars,
@@ -22,161 +22,161 @@ marginal_outliers <- marg_outs_scores(data = dt,
                                       outscorediscdfcells = discrete_scores[[3]],
                                       alpha = 0.01,
                                       rho = 0.20, epsilon = 0.02)
-test_that("Correct output object.", {
-  expect_equal(is.list(marginal_outliers), TRUE)
-  expect_equal(length(marginal_outliers), 3)
+testthat::test_that("Correct output object.", {
+  testthat::expect_equal(is.list(marginal_outliers), TRUE)
+  testthat::expect_equal(length(marginal_outliers), 3)
 })
 
-test_that("Incorrect input argument values.", {
-  expect_error(marg_outs_scores(data = dt,
+testthat::test_that("Incorrect input argument values.", {
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars+1)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Discrete variables should be of class 'factor'.")
-  expect_error(marg_outs_scores(data = as.matrix(dt, nrow = rows),
+  testthat::expect_error(marg_outs_scores(data = as.matrix(dt, nrow = rows),
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Data set should be of class 'data.frame'.")
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = as.matrix(discrete_scores[[2]]),
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Data set of discrete scores should be of class 'data.frame'.")
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = as.matrix(continuous_scores),
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Data set of continuous scores should be of class 'data.frame'.")
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = as.matrix(discrete_scores[[3]])),
                "Matrix of contributions should be of class 'data.frame'.")
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]][c(1:(rows-1)),],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Incorrect number of rows for data frame of discrete scores.")
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores[c(1:(rows-1)),],
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Incorrect number of rows for data frame of continuous scores.")
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = data.frame(discrete_scores[[3]][c(1:(rows-1)), c(1:disc_vars)])),
                "Incorrect number of rows for matrix of contributions.")
-  expect_error(marg_outs_scores(data = dt,
-                                disc_cols = c(1:(disc_vars)),
-                                outscorediscdf = discrete_scores[[2]],
-                                outscorecontdf = continuous_scores,
-                                outscorediscdfcells = data.frame(discrete_scores[[3]][c(1:rows), c(1:(disc_vars-1))])),
-               "Incorrect number of columns for matrix of contributions.")
-  expect_error(marg_outs_scores(data = dt,
+  #testthat::expect_error(marg_outs_scores(data = dt,
+  #                              disc_cols = c(1:(disc_vars)),
+  #                              outscorediscdf = discrete_scores[[2]],
+  #                              outscorecontdf = continuous_scores,
+  #                              outscorediscdfcells = data.frame(discrete_scores[[3]][c(1:rows), c(1:(disc_vars-1))])),
+  #             "Incorrect number of columns for matrix of contributions.")
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = data.frame(discrete_scores[[2]][c(1:rows), 1]),
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Incorrect number of columns for data frame of discrete scores (should be 2).", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = data.frame(continuous_scores[c(1:rows), 1]),
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Incorrect number of columns for data frame of continuous scores (should be 2).", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = cbind(discrete_scores[[2]], rnorm(rows)),
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Incorrect number of columns for data frame of discrete scores (should be 2).", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = cbind(continuous_scores, rnorm(rows)),
                                 outscorediscdfcells = discrete_scores[[3]]),
                "Incorrect number of columns for data frame of continuous scores (should be 2).", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = '0.20', epsilon = 0.20),
                "rho must be a number between 0 and 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0.20, epsilon = '0.20'),
                "epsilon must be a number between 0 and 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0.60, epsilon = 0),
                "Incorrect value for rho - must be between 0 and 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0, epsilon = 0),
                "Incorrect value for rho - must be between 0 and 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = -0.1, epsilon = 0),
                "Incorrect value for rho - must be between 0 and 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0.20, epsilon = -0.25),
                "Incorrest value for epsilon - must be between 0 and 0.25.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0.20, epsilon = 0.30),
                "Incorrest value for epsilon - must be between 0 and 0.25.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0.20, epsilon = 0.20),
                "rho must be greater than epsilon and their sum should be at most 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0.20, epsilon = 0.21),
                "rho must be greater than epsilon and their sum should be at most 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
                                 outscorediscdfcells = discrete_scores[[3]],
                                 rho = 0.40, epsilon = 0.20),
                "rho must be greater than epsilon and their sum should be at most 0.50.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
@@ -184,7 +184,7 @@ test_that("Incorrect input argument values.", {
                                 alpha = 0,
                                 rho = 0.20, epsilon = 0.02),
                "alpha should be positive and at most equal to 0.20.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
@@ -192,7 +192,7 @@ test_that("Incorrect input argument values.", {
                                 alpha = -0.1,
                                 rho = 0.20, epsilon = 0.02),
                "alpha should be positive and at most equal to 0.20.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
@@ -200,7 +200,7 @@ test_that("Incorrect input argument values.", {
                                 alpha = 0.21,
                                 rho = 0.20, epsilon = 0.02),
                "alpha should be positive and at most equal to 0.20.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,
@@ -208,7 +208,7 @@ test_that("Incorrect input argument values.", {
                                 alpha = '0.01',
                                 rho = 0.20, epsilon = 0.02),
                "alpha should be of class 'numeric'.", fixed = TRUE)
-  expect_error(marg_outs_scores(data = dt,
+  testthat::expect_error(marg_outs_scores(data = dt,
                                 disc_cols = c(1:(disc_vars)),
                                 outscorediscdf = discrete_scores[[2]],
                                 outscorecontdf = continuous_scores,

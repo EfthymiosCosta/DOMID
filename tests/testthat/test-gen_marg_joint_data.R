@@ -12,13 +12,13 @@ dt <- gen_marg_joint_data(n_obs = rows,
                           assoc_vars = c(1,2),
                           assoc_type="linear",
                           seed_num = 1)
-test_that("Correct number of output dimensions.", {
-  expect_equal(dim(dt), c(rows, (disc_vars+cont_vars+1)))
+testthat::test_that("Correct number of output dimensions.", {
+  testthat::expect_equal(dim(dt), c(rows, (disc_vars+cont_vars+1)))
 })
 
-test_that("Correct type of output variables.", {
-  expect_equal(all(sapply(dt[,c(1:disc_vars)], class)=="factor"), TRUE)
-  expect_equal(all(sapply(dt[,c((disc_vars+1):(disc_vars+cont_vars))], class)=="numeric"), TRUE)
+testthat::test_that("Correct type of output variables.", {
+  testthat::expect_equal(all(sapply(dt[,c(1:disc_vars)], class)=="factor"), TRUE)
+  testthat::expect_equal(all(sapply(dt[,c((disc_vars+1):(disc_vars+cont_vars))], class)=="numeric"), TRUE)
 })
 
 dt <- gen_marg_joint_data(n_obs = rows,
@@ -31,9 +31,9 @@ dt <- gen_marg_joint_data(n_obs = rows,
                           assoc_vars = c(1,2),
                           assoc_type="linear",
                           seed_num = 1)
-test_that("Correct output labels for no joint outliers.", {
-  expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] == 3)), 0)
-  expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(0, 1, 2))), rows)
+testthat::test_that("Correct output labels for no joint outliers.", {
+  testthat::expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] == 3)), 0)
+  testthat::expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(0, 1, 2))), rows)
 })
 
 dt <- gen_marg_joint_data(n_obs = rows,
@@ -46,9 +46,9 @@ dt <- gen_marg_joint_data(n_obs = rows,
                           assoc_vars = c(1,2),
                           assoc_type="linear",
                           seed_num = 1)
-test_that("Correct output labels for no marginal outliers.", {
-  expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(1, 2))), 0)
-  expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(0, 3))), rows)
+testthat::test_that("Correct output labels for no marginal outliers.", {
+  testthat::expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(1, 2))), 0)
+  testthat::expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(0, 3))), rows)
 })
 
 dt <- gen_marg_joint_data(n_obs = rows,
@@ -61,13 +61,13 @@ dt <- gen_marg_joint_data(n_obs = rows,
                           assoc_vars = c(1,2),
                           assoc_type="linear",
                           seed_num = 1)
-test_that("Correct output labels for no outliers.", {
-  expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(1, 2, 3))), 0)
-  expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] == 0)), rows)
+testthat::test_that("Correct output labels for no outliers.", {
+  testthat::expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] %in% c(1, 2, 3))), 0)
+  testthat::expect_equal(length(which(dt[, (disc_vars+cont_vars+1)] == 0)), rows)
 })
 
-test_that("Incorrect input variable values error messages.", {
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+testthat::test_that("Incorrect input variable values error messages.", {
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -78,7 +78,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 0.1),
                "Seed number should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -89,7 +89,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 2.1),
                "Seed number should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -100,7 +100,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 0),
                "Seed number should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -111,7 +111,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = -26),
                "Seed number should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = 1.4,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -122,7 +122,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of discrete/continuous variables should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = 0,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -133,7 +133,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of discrete/continuous variables should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = -5,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -144,7 +144,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of discrete/continuous variables should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = 8.4,
                                          n_lvls = 3,
@@ -155,7 +155,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of discrete/continuous variables should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = 0,
                                          n_lvls = 3,
@@ -166,7 +166,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of discrete/continuous variables should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = -2,
                                          n_lvls = 3,
@@ -177,7 +177,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of discrete/continuous variables should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -188,7 +188,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Proportion of outliers should be at most 0.2 and at least 0.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -199,7 +199,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Proportion of outliers should be at most 0.2 and at least 0.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -210,7 +210,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Proportion of joint outliers should be between 0 and 1.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -221,7 +221,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Proportion of joint outliers should be between 0 and 1.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = -1*rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = -1*rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -232,7 +232,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of observations should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows + 0.1,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows + 0.1,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -243,7 +243,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of observations should be a positive integer.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3.1,
@@ -254,7 +254,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of levels should be an integer at least equal to 2 and at most equal to n_obs.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = -3,
@@ -265,7 +265,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of levels should be an integer at least equal to 2 and at most equal to n_obs.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 1,
@@ -276,7 +276,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of levels should be an integer at least equal to 2 and at most equal to n_obs.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = rows + 1,
@@ -287,7 +287,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Number of levels should be an integer at least equal to 2 and at most equal to n_obs.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = rep(3, (disc_vars + 1)),
@@ -298,7 +298,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Vector of number of levels should either be of unit length or of length equal to n_disc.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -309,7 +309,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Incorrect column index for association target variable.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -320,7 +320,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Cannot define 2 associations with the same target.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -331,7 +331,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="anything else",
                                          seed_num = 1),
                "Only association types 'linear', 'product' and 'quotient' are supported.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -342,7 +342,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type=rep("linear", 3),
                                          seed_num = 1),
                "Length of association type should be either 1 or equal to the length of association targets.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -353,7 +353,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Length of association targets should be equal to length of list of association variables.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -364,7 +364,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Association variables should be unique positive integers, at most equal to n_cont.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -375,7 +375,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Association variables should be unique positive integers, at most equal to n_cont.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -386,7 +386,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Association variables should be unique positive integers, at most equal to n_cont.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -397,7 +397,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Association variables should be unique positive integers, at most equal to n_cont.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -408,7 +408,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type="linear",
                                          seed_num = 1),
                "Association variables should be unique positive integers, at most equal to n_cont.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -419,7 +419,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type=c("linear", "product"),
                                          seed_num = 1),
                "Cannot have linear and product/quotient associations for sets of variables with common elements.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -430,7 +430,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type=c("linear", "product"),
                                          seed_num = 1),
                "Cannot have linear and product/quotient associations for sets of variables with common elements.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -441,7 +441,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type=c("linear", "quotient"),
                                          seed_num = 1),
                "Cannot have linear and product/quotient associations for sets of variables with common elements.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -452,7 +452,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type=c("linear", "quotient"),
                                          seed_num = 1),
                "Cannot have linear and product/quotient associations for sets of variables with common elements.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,
@@ -463,7 +463,7 @@ test_that("Incorrect input variable values error messages.", {
                                          assoc_type=c("linear", "quotient"),
                                          seed_num = 1),
                "Cannot have linear and product/quotient associations for sets of variables with common elements.")
-  expect_error(dt <- gen_marg_joint_data(n_obs = rows,
+  testthat::expect_error(dt <- gen_marg_joint_data(n_obs = rows,
                                          n_disc = disc_vars,
                                          n_cont = cont_vars,
                                          n_lvls = 3,

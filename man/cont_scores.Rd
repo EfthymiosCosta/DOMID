@@ -38,5 +38,11 @@ algorithm of Hariri et al. (2019).
 }
 \examples{
 cont_scores(data = iris, cont_cols = c(1:4))
-cont_scores(data = iris, cont_cols = c(1:4), sample_size = 256, ntrees = 10, ndim = 1, max_depth = 10, seed_num = 100)
+cont_scores(data = iris,
+            cont_cols = c(1:4),
+            sample_size = 256,
+            ntrees = 10,
+            ndim = 1,
+            max_depth = 10,
+            seed_num = 100)
 }

@@ -5,7 +5,7 @@
 #'
 #' @return Upper value of Theil's U, u_upper
 #'
-#' @examples u_upper_fun(as.factor(c(1,1,2)), as.factor(c(0,1,2)))
+#' @noRd
 u_upper_fun <- function(x1, x2){
   n1 <- length(levels(x1))
   n2 <- length(levels(x2))

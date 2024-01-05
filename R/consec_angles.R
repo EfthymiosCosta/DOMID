@@ -24,7 +24,11 @@
 #' @return Value of range beyond which there is no longer a significant drop in consecutive vec values.
 #' @export
 #'
-#' @examples consec_angles(vec = sort(rnorm(10), decreasing = TRUE), range = c(1:10), drop_tol = 0.7, range_tol = 8)
+#' @examples
+#' consec_angles(vec = sort(rnorm(10), decreasing = TRUE),
+#'               range = c(1:10),
+#'               drop_tol = 0.7,
+#'               range_tol = 8)
 consec_angles <- function(vec, range, drop_tol = 3, range_tol){
   ### INPUT CHECKS ###
   stopifnot("The 2 parameters must be vectors of the same length." = length(vec)==length(range))
@@ -49,7 +53,7 @@ consec_angles <- function(vec, range, drop_tol = 3, range_tol){
   ### END OF CHECKS ###
   # Check if range includes negative values and shift them towards 0
   shift <- 0
-  if (length(range < 0) > 1){
+  if (sum(range < 0) > 1){
     shift <- min(range)
     range <- range - shift
   }
@@ -65,8 +69,10 @@ consec_angles <- function(vec, range, drop_tol = 3, range_tol){
     }
   }
   ifelse(i >= range_tol,
-         Lambda_i <- kneedle::kneedle(x = range, y = vec,
-                                      decreasing = TRUE, concave = FALSE)[1] + shift,
+         #Lambda_i <- kneedle::kneedle(x = range, y = vec,
+         #                             decreasing = TRUE, concave = FALSE)[1] + shift,
+         Lambda_i <- kneedle(x = range, y = vec,
+                             decreasing = TRUE, concave = FALSE)[1] + shift,
          Lambda_i <- range[i] + shift)
   return(Lambda_i)
 }
