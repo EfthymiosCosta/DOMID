@@ -108,7 +108,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
     levels_num <- length(which(classes_prob > 0))
     # Remove classes with 0 probability caused by factors
     zero_classes <- which(classes_prob == 0)
-    if (length(zero_classes)==0){
+    if (length(zero_classes) > 0){
       classes_prob <- classes_prob[-zero_classes]
     }
     best_subset <- c()
@@ -130,7 +130,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
         num_neighbours <- ceiling(delta*nrow(dt_cleaned[which(dt_cleaned[, target_inx]==class), ]))
         closest_pts <- order(dist_mat_full[inx, ], decreasing = FALSE)[2:(num_neighbours+1)]
         classes_freq <- as.vector(table(dt_cleaned[closest_pts, target_inx]))
-        if (length(zero_classes)==0){
+        if (length(zero_classes) > 0){
           classes_freq <- classes_freq[-zero_classes]
         }
         p_vals <- c(p_vals, stats::chisq.test(classes_freq, p = classes_prob, simulate.p.value = FALSE)$p.value)
@@ -183,7 +183,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
             num_neighbours <- ceiling(delta*nrow(dt_cleaned[which(dt_cleaned[, target_inx]==class), ]))
             closest_pts <- order(test_dist_mat[inx_position, ], decreasing = FALSE)[2:(num_neighbours+1)]
             classes_freq <- as.vector(table(dt_cleaned[closest_pts, target_inx]))
-            if (length(zero_classes)==0){
+            if (length(zero_classes) > 0){
               classes_freq <- classes_freq[-zero_classes]
             }
             p_vals <- c(p_vals, stats::chisq.test(classes_freq, p = classes_prob, simulate.p.value = FALSE)$p.value)
@@ -242,7 +242,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
               num_neighbours <- ceiling(delta*nrow(dt_cleaned[which(dt_cleaned[, target_inx]==class), ]))
               closest_pts <- order(test_dist_mat[inx_position, ], decreasing = FALSE)[2:(num_neighbours+1)]
               classes_freq <- as.vector(table(dt_cleaned[closest_pts, target_inx]))
-              if (length(zero_classes)==0){
+              if (length(zero_classes) > 0){
                 classes_freq <- classes_freq[-zero_classes]
               }
               p_vals <- c(p_vals, stats::chisq.test(classes_freq, p = classes_prob, simulate.p.value = FALSE)$p.value)
