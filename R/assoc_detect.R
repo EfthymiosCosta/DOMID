@@ -91,6 +91,11 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
   } else {
     dt_cleaned <- data
   }
+  # Pre-processing
+  # Refactoring levels
+  dt_cleaned[, target_inx] <- factor(dt_cleaned[, target_inx],
+                                     levels = sort(unique(dt_cleaned[, target_inx])),
+                                     labels = c('1':as.character(length(unique(dt_cleaned[, target_inx])))))
   # Kruskal Wallis test
   vars <- c()
   for (var in pred_inx){
