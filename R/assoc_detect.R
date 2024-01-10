@@ -130,7 +130,7 @@ assoc_detect <- function(data, marginals, target_inx, pred_inx, delta = 0.50, mi
         labels <- which(dt_cleaned[, target_inx]==class)
         inx <- labels[centre_pt]
         # Obtain distances using relevant distance metric
-        dist_mat_full <- as.matrix(stats::dist(dt_cleaned[, subset], method='manhattan'))
+        dist_mat_full <- as.matrix(stats::dist(dt_cleaned[, subset], method='minkowski', p=mink_order))
         # Define number of neighbours
         num_neighbours <- ceiling(delta*nrow(dt_cleaned[which(dt_cleaned[, target_inx]==class), ]))
         closest_pts <- order(dist_mat_full[inx, ], decreasing = FALSE)[2:(num_neighbours+1)]
