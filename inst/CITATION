@@ -6,7 +6,7 @@ bibentry(bibtype = "Article",
   person("Ioanna", "Papatsouma")),
   journal      = "arXiv",
   year         = "2023",
-  url          = "arxiv.org/abs/2308.09562",
+  url          = "https://arxiv.org/abs/2308.09562",
   header       = "To cite DOMID in publications use:"
 )
 
@@ -17,6 +17,6 @@ bibentry(bibtype = "Manual",
   comment = c(ORCID = "0000-0002-1267-1165")),
   person("Ioanna", "Papatsouma")),
   year         = "2023",
-  url          = "CRAN.R-project.org/package=DOMID",
+  url          = "https://CRAN.R-project.org/package=DOMID",
   header       = "To cite the DOMID R package in publications use:"
 )

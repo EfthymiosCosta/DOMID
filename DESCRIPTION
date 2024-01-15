@@ -1,5 +1,5 @@
 Package: DOMID
-Title: Detecting Outliers in MIxed-type Data (DOMID)
+Title: Detecting Outliers in Mixed-Type Data
 Version: 1.0
 Authors@R: 
     person("Efthymios", "Costa", , "efthymios.costa17@imperial.ac.uk", role = c("aut", "cre"),

@@ -135,7 +135,7 @@ table(dt[unique(unlist(marginal_outliers)), 11])
 ```
 Indeed, our data set included 23 single marginal and 16 combined marginal outliers, meaning that the function has managed to detect these, while not erroneously flagging any inliers or joint outliers. An alternative option is to use the `marg_outs` function instead. This function only takes as input variables the data frame, the indices of the discrete variable columns and the indices of the continuous variable columns. It returns the same output as `marg_outs_scores`. In fact, `marg_outs` uses `marg_outs_scores`; their difference is that the former does not require inputting discrete or continuous scores of outlyingness, as these are calculated automatically using `disc_scores` and `cont_scores`. Using `marg_outs_scores` offers additional flexibility; for example, the user can set the hyperparameter values for the Extended Isolation Forest algorithm used in `cont_scores`, whereas `marg_outs` will use the aforementioned function with its default hyperparameter values (except for `alpha`, `MAXLEN`, `rho` and `epsilon` which can be specified by the user). In this case, all hyperparameters involved in the calculation of the discrete and the continuous scores were set equal to their default values, so we expect `marg_outs` to return identical results to `marg_outs_scores`, as we show below.
 
-```{r marg_outs}
+```{r marg_outs, eval = FALSE}
 marginal_outliers_2 <- marg_outs(data = dt,
                                  disc_cols = c(1:5),
                                  cont_cols = c(6:10),
@@ -262,7 +262,7 @@ table(dt[joint_outliers, 11])
 
 The `DOMID` function serves as a wrapper function for all the functions presented above. It returns a list that includes the row indices for marginal outliers as its first 3 elements (making the distinction between discrete, continuous and combined marginal outliers) and a vector of row indices for the joint outliers (assuming an association has been found). It further returns the discrete and continuous scores for the observations, the matrix of contributions and finally the value of `MAXLEN` used for the calculation of discrete scores. We test this on our data frame but we recommend the use of the functions above for a more detailed and thorough analysis. We also check whether the output is the same as the one we got earlier.
 
-```{r DOMID_test}
+```{r DOMID_test, eval=FALSE}
 outliers_detected <- DOMID(data = dt, disc_cols = c(1:5), cont_cols = c(6:10),
                            alpha = 0.01, MAXLEN = 0, rho = 0.2, epsilon = 0.02,
                            sample_size = 256, ntrees = 500, ndim = 0,
